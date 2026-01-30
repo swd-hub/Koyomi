@@ -36,11 +36,11 @@
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="input-group">
-            <label>10a当り薬量 (ml/g)</label>
+            <label>10a当り薬量 (ml、g)</label>
             <input type="number" id="medPer10a" placeholder="例: 500" oninput="calculate()">
         </div>
         <div class="input-group">
-            <label>10a当り水量 (L)</label>
+            <label>10a当り希釈水量 (L)</label>
             <input type="number" id="waterPer10a" placeholder="例: 100" oninput="calculate()">
         </div>
     </div>
@@ -48,7 +48,7 @@
     <div class="result-container">
         <div class="result-box box-medicine">
             <div class="label-sm">必要な薬剤の総量</div>
-            <div class="val" id="totalMed">0<span class="unit">ml/g</span></div>
+            <div class="val" id="totalMed">0<span class="unit">ml、g</span></div>
         </div>
         <div class="result-box box-water">
             <div class="label-sm">必要な水の総量</div>

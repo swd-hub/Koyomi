@@ -52,8 +52,8 @@
             <div class="val" id="totalL">0<span class="unit">L</span></div>
         </div>
         <div class="result-box box-concentrate">
-            <div class="label-sm">必要な原液量</div>
-            <div class="val" id="geneki">0<span class="unit">ml</span></div>
+            <div class="label-sm">必要な薬量</div>
+            <div class="val" id="geneki">0<span class="unit">ml、g</span></div>
         </div>
         <div class="result-box box-water">
             <div class="label-sm">加える水の量</div>
@@ -81,7 +81,7 @@
         if (area > 0 && liquidPer10a > 0 && rate > 0) {
             // 合計散布液量を計算 (L)
             const totalL = (area / 10) * liquidPer10a;
-            // 原液量を計算 (ml)
+            // 薬量を計算 (ml、g)
             const genekiMl = (totalL / rate) * 1000;
             // 水の量を計算 (L)
             const mizuL = totalL - (genekiMl / 1000);
