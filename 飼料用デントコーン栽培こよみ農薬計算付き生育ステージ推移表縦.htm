@@ -248,7 +248,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     justify-content: center;
     
     /* ポイント：幅を固定（または最小幅を指定）することで形を揃える */
-    width: 85px;           /* 全てのアイコンを同じ幅に */
+    width: 70px;           /* 全てのアイコンを同じ幅に */
     height: auto;
     min-height: 65px;      /* 高さも揃えるときれい */
     
@@ -315,36 +315,76 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         .detail-box li {
             margin-bottom: 10px;
         }
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .detail-table thead {
-            background: #2d5016;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .detail-table th {
-            background: #2d5016;
-            color: white;
-            padding: 12px;
-            border: 1px solid #1a3a0d;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1rem;
-        }
-        .detail-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-            font-size: 1rem;
-        }
+.detail-table {
+    width: 100%;
+    table-layout: auto; 
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.85rem; /* スマホでは少し小さく */
+    border: 1px solid #ddd;
+    background-color: white !important;
+}
+
+/* ヘッダー */
+.detail-table thead {
+    background: #2d5016;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.detail-table th {
+    background: #2d5016;
+    color: white;
+    /* パディングを絞って幅を節約 */
+    padding: 8px 4px;
+    white-space: nowrap;
+    border: 1px solid #1a3a0d;
+    font-size: 0.85rem;
+}
+
+/* ボディセル：スマホ向けのコンパクト設定 */
+.detail-table td {
+    padding: 8px 6px; /* 余白を詰める */
+    border: 1px solid #ddd;
+    background-color: white;
+    /* 幅をこれまでの半分（150px → 75px）程度に設定 */
+    min-width: 75px; 
+    line-height: 1.4;
+    word-break: break-all; /* 枠内で強制改行 */
+}
+
+/* 1列目（項目名）をさらに細くしてバランスを取る */
+.detail-table td:first-child {
+    min-width: 60px;
+    font-weight: bold;
+}
+
+/* 縞々設定 */
+.detail-table tbody tr:nth-child(odd) td {
+    background-color: #f9f9f9 !important;
+}
+
+/* ホバー設定 */
+.detail-table tbody tr:hover td {
+    background-color: #f0f8ff !important;
+}
+
+/* --- PC（画面幅が広い時）の設定：ここで広さを戻す --- */
+@media (min-width: 768px) {
+    .detail-table {
+        font-size: 0.95rem;
+    }
+    .detail-table th {
+        padding: 12px 10px;
+        font-size: 1rem;
+    }
+    .detail-table td {
+        padding: 12px;
+        min-width: auto; /* PCでは中身に合わせる */
+        font-size: 0.95rem;
+    }
+}
         .detail-table tbody tr:nth-child(odd) {
             background: #f9f9f9;
         }
@@ -965,13 +1005,13 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
                         </table>
 
                 
-				<div style="margin-top: 15px; padding: 10px; border-top: 1px solid #eee; text-align: right;">
-				    <a href="javascript:void(0)" 
-				       onclick="openVirtualTab(insecticideData)" 
-				       style="display: inline-block; padding: 10px 20px; background-color: #e8f5e9; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold; font-size: 0.9em;">
-				        🧮 除草剤希釈計算（別タブで開く）
-				    </a>
-				</div>
+    <div style="margin-top: 15px; text-align: right;"> <a href="javascript:void(0)" 
+           onclick="openVirtualTab(herbicideData)" 
+           style="display: inline-block; padding: 10px 20px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold;">
+            🧮 除草剤希釈計算ツール（別タブ）
+        </a>
+    </div>
+</div>
 				
             <!-- 追肥 詳細ボックス -->
             </div> 
@@ -1169,34 +1209,48 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>除草剤散布計算</title>
 <style>
-    /* 1. 背景全体：親の背景をで上書き */
-    .container { 
-        font-family: sans-serif; 
-        display: flex; 
-        justify-content: center; 
-        align-items: flex-start; 
-        padding: 40px 20px; 
-        background-color: #f0f9ff ; 
-        margin: 0; 
-        min-height: 100vh; 
-    }
+/* 1. 背景全体：パディングをスマホ向けに最小化 */
+.container { 
+    font-family: sans-serif; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    padding: 10px; /* 40px 20px から 10px に減らして隙間を埋める */
+    background-color: #f0f9ff; 
+    margin: 0; 
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+}
 
-    /* 2. カード本体：親の太い緑の線を強制排除 */
-    .card { 
-        background: white ; 
-        padding: 25px; 
-        border-radius: 16px; 
-        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
-        width: 100%; 
-        max-width: 420px; 
-        border: none ; 
-        outline: none ;
-    }
+/* 2. カード本体：ここが最大のポイント */
+.card { 
+    background: white; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+    
+    /* 幅の設定を「基本100%」に変更 */
+    width: 100%; 
+    /* 420pxの制限をなくすか、大きな画面の時だけに限定する */
+    max-width: 100%; 
+    
+    border: none; 
+    outline: none;
+    box-sizing: border-box; /* paddingを含めて100%にするために必須 */
+}
 
-    /* 3. 各パーツ：.card 内に限定して親のグローバル設定をブロック */
+/* 3. PCなど広い画面のときだけ中央でコンパクトにする設定 */
+@media (min-width: 440px) {
+    .card {
+        max-width: 420px; /* 画面が広い時だけ420pxに制限 */
+        margin-top: 20px;
+    }
+}
+    /* 4. 各パーツ：.card 内に限定して親のグローバル設定をブロック */
     .card h2 { 
         color: #0369a1 ; 
         text-align: center; 
@@ -1242,6 +1296,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     .card .val { font-size: 1.6rem; font-weight: bold; color: #111827; background: none ; }
     .card .unit { font-size: 0.9rem; margin-left: 4px; color: #4b5563; }
     .card .formula-note { font-size: 0.75rem; color: #9ca3af; margin-top: 20px; text-align: center; line-height: 1.5; background: none ; }
+    :root { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 </style>
 </head>
 <body class="container">
@@ -1277,7 +1332,6 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 
     <div class="formula-note">
         ※計算方法：(面積 ÷ 10) × 各10aあたりの量<br>
-        ※希釈倍率を気にする必要はありません。
     </div>
 </div>
 
@@ -1303,6 +1357,13 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             totalWaterEl.innerHTML = '0<span class="unit">L</span>';
         }
     }
+    function openVirtualTab(data) {
+    // サイズ(width/height)を指定すると、スマホでは「小さい窓」と認識されます
+    const newWin = window.open('', '_blank'); 
+    
+    newWin.document.write(data);
+    newWin.document.close();
+}
 <\/script>
 
 </body>
@@ -1316,7 +1377,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>農薬希釈計算（面積対応版）</title>
+    <title>害虫防除農薬希釈計算</title>
 <style>
         /* 1. 背景全体の設定（親の背景をで上書き） */
         .container { 
@@ -1414,7 +1475,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 </head>
 <body class="container">
 <div class="card">
-    <h2>農薬希釈計算</h2>    
+    <h2>害虫防除農薬希釈計算</h2>    
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="input-group">
             <label>散布面積 (a)</label>
@@ -1449,7 +1510,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     <div class="formula-note">
         ※1アール(a) = 100㎡ = 30坪<br>
         ※計算式: 合計液量 = (面積 / 10) × 10a当り液量<br>
-        ※原液(ml) = (合計液量 / 倍数) × 1000
+        ※薬量(ml、g) = (合計液量 / 倍数) × 1000
     </div>
 </div>
 
