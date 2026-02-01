@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>栽培こよみエディタ（修正版）</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+<style>
+    /* --------------------------------------------------
+       移植先のCSS設定（ここを変更すると書き出し結果も変わります）
+       -------------------------------------------------- */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 10px; margin: 0; }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        border: none; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        padding: 20px;
+    }
+
+    h1 { text-align: center; color: #2d5016; margin-bottom: 5px; font-size: 2.2rem; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 10px; font-size: 1.2rem; }
+    .date-info { text-align: center; color: #999; margin-bottom: 25px; font-size: 1rem; }
+    
+    h2 { color: #2d5016; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem; border-bottom: 3px solid #2d5016; padding-bottom: 10px; }
+    h3 { color: #2d5016; margin-top: 20px; margin-bottom: 12px; font-size: 1.2rem; border-left: 4px solid #2d5016; padding-left: 10px; }
+    
+    .table-content { display: block; transition: all 0.3s ease; }
+    .table-wrapper { position: relative; overflow-x: auto; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; display: inline-block; max-width: 100%; }
+    
+    table { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; }
+    th:nth-child(1), td:nth-child(1) { width: 15%; } /* 月 */
+    th:nth-child(2), td:nth-child(2) { width: 15%; } /* 旬 */
+    th:nth-child(3), td:nth-child(3) { width: 25%; } /* ステージ */
+    th:nth-child(4), td:nth-child(4) { width: 45%; } /* 作業 */
+
+    thead { background: #2d5016; position: sticky; top: 0; z-index: 10; }
+    th { background: #2d5016; color: white; padding: 14px 6px; text-align: center; font-weight: bold; font-size: 1rem; border: 1px solid #1a3a0d; }
+    td { padding: 14px 6px; border: 1px solid #ddd; font-size: 1rem; text-align: center; line-height: 1.4; vertical-align: middle; }
+
+    /* アイコン */
+    .work-content { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; padding: 8px !important; }
+    .work-icon { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: auto; min-height: 65px; gap: 3px; padding: 6px 4px; background: white; border: 1px solid #ddd; border-radius: 4px; font-size: 0.75rem; font-weight: 500; color: #333; cursor: pointer; transition: all 0.2s; box-sizing: border-box; }
+    .work-icon:hover { background: #fff3cd; border-color: #2d5016; transform: scale(1.05); }
+    .work-icon-symbol { font-size: 1.2rem; line-height: 1; }
+
+    /* ステージ */
+    .stage-item { display: inline-block; padding: 8px 12px; margin: 3px auto; border-radius: 4px; font-size: 0.95rem; font-weight: 500; }
+    .stage-1 { background: #ffe0b2; color: #333; cursor: pointer; }
+    .stage-1:hover { background: #ffb74d; }
+
+    /* 詳細ボックス */
+    .detail-box { background: #f0f8ff; border: 2px solid #2d5016; border-radius: 8px; padding: 20px; margin: 20px 0; display: block; scroll-margin-top: 20px; position: relative; z-index: 1; }
+    .detail-box h4 { color: #2d5016; font-size: 1.3rem; margin-bottom: 15px; border-bottom: 2px solid #2d5016; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .back-button { display: inline-block; padding: 5px 12px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
+    .back-button:hover { background: #444; }
+
+    /* 計算リンク */
+    .calc-link-button { display: inline-block; padding: 8px 15px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+    .calc-link-button:hover { background-color: #2e7d32; color: #fff; }
+
+    /* --------------------------------------------------
+       エディタ画面用のレイアウト（印刷/コピーには含まれません）
+       -------------------------------------------------- */
+    .editor-layout { display: flex; gap: 20px; max-width: 100%; height: 95vh; }
+    .editor-pane, .preview-pane { flex: 1; display: flex; flex-direction: column; }
+    textarea { width: 100%; flex-grow: 1; padding: 15px; font-family: monospace; font-size: 14px; border: 1px solid #ccc; border-radius: 8px; resize: none; }
+    .preview-area { flex-grow: 1; overflow-y: auto; background: #e0e0e0; padding: 20px; border-radius: 8px; border: 1px solid #ccc; }
+    .toolbar { padding: 10px 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; }
+    
+    button { padding: 10px 20px; cursor: pointer; background: #2d5016; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; }
+    button:hover { background: #1a3a0d; }
+    button.secondary { background: #666; font-size: 0.9rem; padding: 8px 16px; }
+    
+    /* プレビュー内のコンテナを強制的に適用 */
+    #preview { margin: 0 auto; min-height: 200px; background: white; }
+</style>
+</head>
+<body>
+
+<div class="editor-layout">
+    <div class="editor-pane">
+        <div class="toolbar">
+            <span style="font-weight:bold; color:#2d5016;">📝 Markdown入力</span>
+            <div>
+                <button class="secondary" onclick="insertTemplate()">テンプレート挿入</button>
+                <button class="secondary" onclick="clearEditor()">クリア</button>
+            </div>
+        </div>
+        <textarea id="markdown-input" placeholder="ここにMarkdownを入力してください..."></textarea>
+        <div style="margin-top:5px; font-size:0.8rem; color:#666;">
+            文字数: <span id="char-count">0</span> | <span id="char-info">行: 0</span>
+        </div>
+    </div>
+
+    <div class="preview-pane">
+        <div class="toolbar">
+            <span style="font-weight:bold; color:#2d5016;">👁️ プレビュー (完成形)</span>
+            <div>
+                <button onclick="execCopyHTML()">📋 HTMLをコピー</button>
+                <button onclick="downloadHTML()">💾 HTML保存</button>
+            </div>
+        </div>
+        <div class="preview-area">
+            <div id="preview" class="container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('markdown-input');
+    const preview = document.getElementById('preview');
+    const charCount = document.getElementById('char-count');
+    const charInfo = document.getElementById('char-info');
+
+    // 移植用CSSの定義
+    const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
+
+    // ▼▼▼ スムーズスクロール用補助関数 ▼▼▼
+    window.scrollToDetail = function(id) {
+        const target = document.getElementById(id);
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    window.backToTable = function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ▼▼▼ プレビュー更新関数 ▼▼▼
+    function updatePreview() {
+        let markdown = input.value;
+        if (!markdown) {
+            preview.innerHTML = '';
+            return;
+        }
+
+        // 1. アイコン変換 (先に処理して保護)
+        markdown = markdown.replace(/\[((?:🌱|🧪|🌾|🚫|💧|🐛|⚠️|✂️).*?)\]\((.*?)\)/g, (match, text, id) => {
+            const symbol = text.match(/^(🌱|🧪|🌾|🚫|💧|🐛|⚠️|✂️)/)[0];
+            const label = text.replace(symbol, '').trim();
+            return `<div class="work-icon" onclick="scrollToDetail('${id}')">
+                        <div class="work-icon-symbol">${symbol}</div>
+                        ${label}
+                    </div>`;
+        });
+
+        // 2. ステージ変換
+        markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, (match, text, id) => {
+            if (id.includes('Data')) {
+                return `<a href="javascript:void(0)" onclick="openVirtualTab('${id}')" class="calc-link-button">${text}</a>`;
+            }
+            return `<span class="stage-item stage-1" onclick="scrollToDetail('${id}')">${text}</span>`;
+        });
+
+        // 3. ID保護
+        markdown = markdown.replace(/### (.*?) \(id="(.*?)"\)/g, '### @ID:$2@$1');
+
+        // marked.js でHTML変換
+        let html = marked.parse(markdown);
+
+        // 4. 詳細ボックス構造へ (閉じタグの整合性を確保)
+        html = html.replace(/<h3>@ID:(.*?)@(.*?)<\/h3>/g, (match, id, title) => {
+            return `</div><div class="detail-box" id="${id}"><h4><span>${title}</span><button class="back-button" onclick="backToTable()">← 戻る</button></h4>`;
+        });
+        
+        // 5. テーブルラッパー
+        html = html.replace(/<table>/g, '<div class="table-wrapper"><table>');
+        html = html.replace(/<\/table>/g, '</table></div>');
+        
+        // 6. 全体ラッパー整合性
+        // 最初の </div> を消去し、最後に帳尻合わせの </div> を追加
+        let finalHtml = `<div class="content-body">${html}</div>`;
+        finalHtml = finalHtml.replace('</div><div class="detail-box"', '<div class="detail-box"');
+
+        // 安全化
+        const clean = DOMPurify.sanitize(finalHtml, {
+            ADD_ATTR: ['onclick', 'target'],
+            ADD_TAGS: ['span', 'div', 'button', 'a']
+        });
+
+        preview.innerHTML = clean;
+
+        // クラスの自動追加 (CSS適用のための補完)
+        preview.querySelectorAll('td').forEach(td => {
+            if (td.querySelector('.work-icon')) td.classList.add('work-content');
+            if (td.querySelector('.stage-item')) td.classList.add('stage-content');
+        });
+
+        charCount.textContent = markdown.length;
+        charInfo.textContent = `行: ${markdown.split('\n').length}`;
+    }
+
+    input.addEventListener('input', updatePreview);
+
+    // ▼▼▼ コピー機能 ▼▼▼
+    function execCopyHTML() {
+        updatePreview();
+        setTimeout(() => {
+            const htmlCode = preview.innerHTML;
+            if (!htmlCode) return;
+            navigator.clipboard.writeText(htmlCode).then(() => {
+                alert('✅ HTMLをコピーしました！');
+            });
+        }, 50);
+    }
+
+    // HTMLファイル保存
+    function downloadHTML() {
+        updatePreview();
+        const content = preview.innerHTML;
+        const finalFile = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栽培管理シート</title>
+    <style>${commonCSS}</style>
+</head>
+<body>
+    <div class="container">${content}</div>
+    <script>
+        function scrollToDetail(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+        function backToTable() { window.scrollTo({top:0,behavior:'smooth'}); }
+        function openVirtualTab(id) { alert(id + " を開きます"); }
+    <\/script>
+</body>
+</html>`;
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(finalFile));
+        element.setAttribute('download', 'cultivation_sheet.html');
+        element.click();
+    }
+
+    function insertTemplate() {
+        input.value = `# 🌾 飼料用トウモロコシ栽培こよみ
+
+| 月 | 旬 | ステージ | 主な作業 |
+|---|---|---|---|
+| 4月 | 上旬 | [播種](seedingDetail) | [🌱ほ場準備](preparationDetail) [🧪基肥](fertilizerDetail) |
+
+---
+
+### 🌱 ほ場準備 (id="preparationDetail")
+- 堆肥を散布します
+- 丁寧に耕起します
+
+### 🧪 基肥 (id="fertilizerDetail")
+- 10aあたり規定量を散布します`;
+        updatePreview();
+    }
+
+    function clearEditor() {
+        if(confirm("すべて消去しますか？")) {
+            input.value = "";
+            updatePreview();
+        }
+    }
+    
+    function openVirtualTab(id) { alert(id + " を開きます"); }
+
+    updatePreview();
+</script>
+
+</body>
+</html>
