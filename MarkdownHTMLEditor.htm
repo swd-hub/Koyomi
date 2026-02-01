@@ -11,60 +11,589 @@
     /* --------------------------------------------------
        移植先のCSS設定（ここを変更すると書き出し結果も変わります）
        -------------------------------------------------- */
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; padding: 10px; margin: 0; }
+        * {
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    /* ↓ここを border: none; に書き換えるか、borderの行を消してください */
+    border: none; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+    padding: 20px;
+}
+.container .detail-box {
+    background: #f0f8ff;
+    border: 2px solid #2d5016; /* ← 中の箱の線だけが残ります */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    display: block;
+}
+        h1 {
+            text-align: center;
+            color: #2d5016;
+            margin-bottom: 5px;
+            font-size: 2.2rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .date-info {
+            text-align: center;
+            color: #999;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+        h2 {
+            color: #2d5016;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 3px solid #2d5016;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #2d5016;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            border-left: 4px solid #2d5016;
+            padding-left: 10px;
+        }
+        .table-content {
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+.table-wrapper {
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: inline-block;    /* これを追加すると、枠線もテーブルのサイズに縮まります */
+    max-width: 100%;         /* 画面からはみ出さないように制限 */
+}
+/* 表自体を親要素の幅100%に広げる */
+table {
+    width: 100%;
+    max-width: 100%; /* はみ出し防止 */
+    table-layout: fixed; /* 列の比率を固定してガタつきを防ぐ */
+    border-collapse: collapse;
+}
+/* 各列の幅を黄金比に近い形で割り振り */
+th:nth-child(1), td:nth-child(1) { width: 20%; } /* 月 */
+th:nth-child(2), td:nth-child(2) { width: 20%; } /* 旬 */
+th:nth-child(3), td:nth-child(3) { width: 30%; } /* 生育ステージ */
+th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
+        thead {
+            background: #2d5016;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        th {
+            background: #2d5016;
+            color: white;
+            padding: 14px 6px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 1px solid #1a3a0d;
+        }
+        td {
+            padding: 14px 6px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .row-label {
+            background: #f0f0f0;
+            font-weight: bold;
+            color: #333;
+            padding: 14px 6px;
+            min-width: 100px;
+            text-align: left;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        .stage-content {
+            background: #f9f9f9;
+            padding: 12px 6px;
+            min-height: 50px;
+        }
+/* 1. 親要素：アイコンたちを綺麗に整列させる */
+.work-content {
+    flex-wrap: wrap;       /* 幅が足りない時だけ改行する */
+    gap: 8px;             /* アイコン同士の隙間を一定にする */
+    justify-content: flex-start; /* 左詰めで並べる */
+    padding: 8px !important;
+}
+        .stage-item {
+            display: block;
+            padding: 8px 8px;
+            margin: 3px auto;
+            border-radius: 3px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+		.stage-1 {
+		    background: #ffe0b2;
+		    color: #333;
+		    cursor: pointer;
+		}
+		.stage-1:hover {
+		    background: #ffb74d;
+		    color: #333;
+		}
+		.stage-2 {
+		    background: #c8e6c9;
+		    color: #333;
+		    cursor: pointer;
+		}
+        .stage-3 {
+            background: #a5d6a7;
+            color: #333;
+            cursor: pointer;
+        }
+        .stage-3:hover {
+            background: #7fbf73;
+            color: white;
+        }
+        .stage-4 {
+            background: #81c784;
+            color: white;
+            cursor: pointer;
+        }
+        .stage-5 {
+            background: #66bb6a;
+            color: white;
+        }
+        .stage-water {
+            background: #81d4fa;
+            color: #333;
+        }
+        .stage-silking {
+            background: #ffab91;
+            color: #333;
+            cursor: pointer;
+        }
+        .stage-silking:hover {
+            background: #ff8a65;
+        }
+        .stage-milky {
+            background: #fffde7;
+            color: #333;
+            cursor: pointer;
+        }
+        .stage-milky:hover {
+            background: #fffbbd;
+        }
+        .stage-dough {
+            background: #ffd54f;
+            color: #333;
+            cursor: pointer;
+        }
+        .stage-dough:hover {
+            background: #ffca28;
+        }
+        .stage-yellow {
+            background: #ffc107;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .stage-yellow:hover {
+            background: #ffb300;
+        }
+        .stage-8 {
+            background: #8b7355;
+            color: white;
+            cursor: pointer;
+        }
+        .stage-8:hover {
+            background: #6d5844;
+        }
+        .split-cell {
+            display: flex;
+            gap: 2px;
+        }
+        .split-item {
+            flex: 1;
+            padding: 10px 2px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+/* 2. アイコン自体：横幅を揃えて「ちぐはぐ」を直す */
+.work-icon {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 8px;
-        border: none; 
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-        padding: 20px;
+    /* ポイント：幅を固定（または最小幅を指定）することで形を揃える */
+    width: 70px;           /* 全てのアイコンを同じ幅に */
+    height: auto;
+    min-height: 65px;      /* 高さも揃えるときれい */
+    
+    gap: 3px;
+    padding: 6px 4px;      /* 左右のパディングを少し削る */
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.75rem;    /* 文字を少し小さくして収まりを良くする */
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-sizing: border-box; /* 枠線を含めた幅計算にする */
+}
+        .work-icon:hover {
+            background: #fff3cd;
+            border-color: #2d5016;
+            transform: scale(1.05);
+        }
+/* アイコン内の記号/絵文字のサイズ固定 */
+.work-icon-symbol {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+        .detail-section {
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        .detail-box {
+            background: #f0f8ff;
+            border: 2px solid #2d5016;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            display: block;
+            scroll-margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .detail-box.hidden {
+            display: none;
+        }
+        .detail-box h4 {
+            color: #2d5016;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2d5016;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .detail-box ul {
+            margin-left: 20px;
+            line-height: 2;
+            font-size: 1.05rem;
+            color: #333;
+            list-style-type: disc;
+        }
+        .detail-box li {
+            margin-bottom: 10px;
+        }
+.detail-table {
+    width: 100%;
+    table-layout: auto; 
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.85rem; /* スマホでは少し小さく */
+    border: 1px solid #ddd;
+    background-color: white !important;
+}
+
+/* ヘッダー */
+.detail-table thead {
+    background: #2d5016;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.detail-table th {
+    background: #2d5016;
+    color: white;
+    /* パディングを絞って幅を節約 */
+    padding: 8px 4px;
+    white-space: nowrap;
+    border: 1px solid #1a3a0d;
+    font-size: 0.85rem;
+}
+
+/* ボディセル：スマホ向けのコンパクト設定 */
+.detail-table td {
+    padding: 8px 6px; /* 余白を詰める */
+    border: 1px solid #ddd;
+    background-color: white;
+    /* 幅をこれまでの半分（150px → 75px）程度に設定 */
+    min-width: 75px; 
+    line-height: 1.4;
+    word-break: break-all; /* 枠内で強制改行 */
+}
+
+/* 1列目（項目名）をさらに細くしてバランスを取る */
+.detail-table td:first-child {
+    min-width: 60px;
+    font-weight: bold;
+}
+
+/* 縞々設定 */
+.detail-table tbody tr:nth-child(odd) td {
+    background-color: #f9f9f9 !important;
+}
+
+/* ホバー設定 */
+.detail-table tbody tr:hover td {
+    background-color: #f0f8ff !important;
+}
+
+/* --- PC（画面幅が広い時）の設定：ここで広さを戻す --- */
+@media (min-width: 768px) {
+    .detail-table {
+        font-size: 0.95rem;
     }
+    .detail-table th {
+        padding: 12px 10px;
+        font-size: 1rem;
+    }
+    .detail-table td {
+        padding: 12px;
+        min-width: auto; /* PCでは中身に合わせる */
+        font-size: 0.95rem;
+    }
+}
+        .detail-table tbody tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        .detail-table tbody tr:hover {
+            background: #f0f8ff;
+        }
+        .maturity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .maturity-table thead {
+            background: #2d5016;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .maturity-table th {
+            background: #2d5016;
+            color: white;
+            padding: 14px;
+            border: 1px solid #1a3a0d;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .maturity-table td {
+            padding: 14px;
+            border: 1px solid #ddd;
+            text-align: left;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        .maturity-table tbody tr:nth-child(odd) {
+            background: #f9f9f9;
+        }
+        .maturity-table tbody tr:nth-child(even) {
+            background: #f0f8ff;
+        }
+        .maturity-table tbody tr:hover {
+            background: #e8f4f8;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0;
+            transition: background 0.3s;
+        }
+        .back-button:hover {
+            background: #444;
+        }
+        strong {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+            .container {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+            h3 {
+                font-size: 1.1rem;
+            }
+            th, td {
+                padding: 10px 4px;
+                font-size: 0.9rem;
+            }
+            .row-label {
+                font-size: 0.9rem;
+            }
+            .stage-item {
+                padding: 6px 6px;
+                font-size: 0.85rem;
+            }
+            .split-item {
+                padding: 8px 2px;
+                font-size: 0.8rem;
+            }
+            .work-content {
+                font-size: 0.8rem;
+                min-height: 60px;
+            }
+            .work-icon {
+                padding: 5px 6px;
+                font-size: 0.75rem;
+            }
+            .work-icon-symbol {
+                font-size: 1.2rem;
+            }
+            .legend {
+                gap: 10px;
+                padding: 15px;
+            }
+            .legend-item {
+                font-size: 0.9rem;
+            }
+            .legend-box {
+                width: 30px;
+                height: 20px;
+            }
+            .toggle-button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            .detail-box {
+                padding: 15px;
+            }
+            .detail-box h4 {
+                font-size: 1.1rem;
+            }
+            .detail-box ul {
+                font-size: 0.95rem;
+                line-height: 1.8;
+            }
+            .detail-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            .detail-table th {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            .maturity-table td {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            .maturity-table th {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            .back-button {
+                padding: 8px 15px;
+                font-size: 0.95rem;
+            }
+        }
+        @media (max-width: 480px) {
+            html {
+                font-size: 13px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.15rem;
+            }
+            h3 {
+                font-size: 1rem;
+            }
+            th, td {
+                padding: 8px 3px;
+                font-size: 0.85rem;
+            }
+            .detail-box ul {
+                font-size: 0.9rem;
+                line-height: 1.7;
+            }
+            .work-content {
+                font-size: 0.75rem;
+                min-height: 50px;
+            }
+            .legend-item {
+                font-size: 0.85rem;
+            }
+        }
+        
+    .calc-link-button {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #fff;
+    color: #2e7d32;
+    text-decoration: none;
+    border: 2px solid #2e7d32;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.calc-link-button:hover {
+    background-color: #2e7d32;
+    color: #fff;
+}
 
-    h1 { text-align: center; color: #2d5016; margin-bottom: 5px; font-size: 2.2rem; }
-    .subtitle { text-align: center; color: #666; margin-bottom: 10px; font-size: 1.2rem; }
-    .date-info { text-align: center; color: #999; margin-bottom: 25px; font-size: 1rem; }
-    
-    h2 { color: #2d5016; margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem; border-bottom: 3px solid #2d5016; padding-bottom: 10px; }
-    h3 { color: #2d5016; margin-top: 20px; margin-bottom: 12px; font-size: 1.2rem; border-left: 4px solid #2d5016; padding-left: 10px; }
-    
-    .table-content { display: block; transition: all 0.3s ease; }
-    .table-wrapper { position: relative; overflow-x: auto; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; display: inline-block; max-width: 100%; }
-    
-    table { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; }
-    th:nth-child(1), td:nth-child(1) { width: 15%; } /* 月 */
-    th:nth-child(2), td:nth-child(2) { width: 15%; } /* 旬 */
-    th:nth-child(3), td:nth-child(3) { width: 25%; } /* ステージ */
-    th:nth-child(4), td:nth-child(4) { width: 45%; } /* 作業 */
-
-    thead { background: #2d5016; position: sticky; top: 0; z-index: 10; }
-    th { background: #2d5016; color: white; padding: 14px 6px; text-align: center; font-weight: bold; font-size: 1rem; border: 1px solid #1a3a0d; }
-    td { padding: 14px 6px; border: 1px solid #ddd; font-size: 1rem; text-align: center; line-height: 1.4; vertical-align: middle; }
-
-    /* アイコン */
-    .work-content { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; padding: 8px !important; }
-    .work-icon { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: auto; min-height: 65px; gap: 3px; padding: 6px 4px; background: white; border: 1px solid #ddd; border-radius: 4px; font-size: 0.75rem; font-weight: 500; color: #333; cursor: pointer; transition: all 0.2s; box-sizing: border-box; }
-    .work-icon:hover { background: #fff3cd; border-color: #2d5016; transform: scale(1.05); }
-    .work-icon-symbol { font-size: 1.2rem; line-height: 1; }
-
-    /* ステージ */
-    .stage-item { display: inline-block; padding: 8px 12px; margin: 3px auto; border-radius: 4px; font-size: 0.95rem; font-weight: 500; }
-    .stage-1 { background: #ffe0b2; color: #333; cursor: pointer; }
-    .stage-1:hover { background: #ffb74d; }
-
-    /* 詳細ボックス */
-    .detail-box { background: #f0f8ff; border: 2px solid #2d5016; border-radius: 8px; padding: 20px; margin: 20px 0; display: block; scroll-margin-top: 20px; position: relative; z-index: 1; }
-    .detail-box h4 { color: #2d5016; font-size: 1.3rem; margin-bottom: 15px; border-bottom: 2px solid #2d5016; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .back-button { display: inline-block; padding: 5px 12px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem; }
-    .back-button:hover { background: #444; }
-
-    /* 計算リンク */
-    .calc-link-button { display: inline-block; padding: 8px 15px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 5px; font-weight: bold; transition: 0.3s; }
-    .calc-link-button:hover { background-color: #2e7d32; color: #fff; }
 
     /* --------------------------------------------------
        エディタ画面用のレイアウト（印刷/コピーには含まれません）
@@ -120,153 +649,113 @@
     const charCount = document.getElementById('char-count');
     const charInfo = document.getElementById('char-info');
 
-    // 移植用CSSの定義
+    // 移植用CSSの取得
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
 
-    // ▼▼▼ スムーズスクロール用補助関数 ▼▼▼
-    window.scrollToDetail = function(id) {
-        const target = document.getElementById(id);
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
+    // ヘルパー関数
+    window.scrollToDetail = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    };
+    window.backToTable = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.openVirtualTab = (id) => {
+        const cleanId = id.replace(/[^a-zA-Z0-9]/g, '');
+        alert(cleanId + " を起動します");
     };
 
-    window.backToTable = function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // ▼▼▼ プレビュー更新関数 ▼▼▼
+    // ▼▼▼ メインの更新関数 ▼▼▼
     function updatePreview() {
         let markdown = input.value;
-        if (!markdown) {
-            preview.innerHTML = '';
-            return;
-        }
+        if (!markdown) { preview.innerHTML = ''; return; }
 
-        // 1. アイコン変換 (先に処理して保護)
-        markdown = markdown.replace(/\[((?:🌱|🧪|🌾|🚫|💧|🐛|⚠️|✂️).*?)\]\((.*?)\)/g, (match, text, id) => {
-            const symbol = text.match(/^(🌱|🧪|🌾|🚫|💧|🐛|⚠️|✂️)/)[0];
-            const label = text.replace(symbol, '').trim();
-            return `<div class="work-icon" onclick="scrollToDetail('${id}')">
-                        <div class="work-icon-symbol">${symbol}</div>
-                        ${label}
-                    </div>`;
-        });
-
-        // 2. ステージ変換
-        markdown = markdown.replace(/\[(.*?)\]\((.*?)\)/g, (match, text, id) => {
-            if (id.includes('Data')) {
-                return `<a href="javascript:void(0)" onclick="openVirtualTab('${id}')" class="calc-link-button">${text}</a>`;
-            }
-            return `<span class="stage-item stage-1" onclick="scrollToDetail('${id}')">${text}</span>`;
-        });
-
-        // 3. ID保護
+        // 1. ID見出しの保護（### タイトル (id="xxx") 形式）
         markdown = markdown.replace(/### (.*?) \(id="(.*?)"\)/g, '### @ID:$2@$1');
 
-        // marked.js でHTML変換
+        // 2. marked.jsでHTMLに変換
         let html = marked.parse(markdown);
 
-        // 4. 詳細ボックス構造へ (閉じタグの整合性を確保)
+        // 3. リンク要素のデザイン固定変換
+        html = html.replace(/<a\s+href="([^"]+)">([\s\S]*?)<\/a>/g, (match, href, text) => {
+            // A. 計算ツール (IDに Data が含まれる場合：右寄せ・白背景・緑枠)
+            if (href.includes('Data')) {
+                return `<div style="margin-top: 15px; text-align: right; clear: both;">
+                            <button onclick="openVirtualTab('${href}')" 
+                               style="display: inline-block; padding: 10px 20px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: inherit;">
+                               ${text}
+                            </button>
+                        </div>`;
+            }
+
+            // B. 作業アイコン (絵文字で始まる場合)
+            if (/^(🌱|🧪|🌾|🚫|💧|🐛|⚠️|✂️|🍃|🧮)/.test(text)) {
+                return `<div class="work-icon" onclick="scrollToDetail('${href}')">${text}</div>`;
+            }
+
+            // C. 通常のステージラベル
+            return `<span class="stage-item stage-1" onclick="scrollToDetail('${href}')">${text}</span>`;
+        });
+
+        // 4. 詳細ボックス構造の復元
         html = html.replace(/<h3>@ID:(.*?)@(.*?)<\/h3>/g, (match, id, title) => {
             return `</div><div class="detail-box" id="${id}"><h4><span>${title}</span><button class="back-button" onclick="backToTable()">← 戻る</button></h4>`;
         });
-        
-        // 5. テーブルラッパー
+
+        // 5. テーブルラッパーの適用
         html = html.replace(/<table>/g, '<div class="table-wrapper"><table>');
         html = html.replace(/<\/table>/g, '</table></div>');
         
-        // 6. 全体ラッパー整合性
-        // 最初の </div> を消去し、最後に帳尻合わせの </div> を追加
-        let finalHtml = `<div class="content-body">${html}</div>`;
-        finalHtml = finalHtml.replace('</div><div class="detail-box"', '<div class="detail-box"');
+        let finalHtml = `<div class="content-body">${html}</div>`.replace('</div><div class="detail-box"', '<div class="detail-box"');
 
-        // 安全化
+        // 6. DOMPurifyで安全化（styleとonclickを許可）
         const clean = DOMPurify.sanitize(finalHtml, {
-            ADD_ATTR: ['onclick', 'target'],
-            ADD_TAGS: ['span', 'div', 'button', 'a']
+            ADD_ATTR: ['onclick', 'style'],
+            ADD_TAGS: ['span', 'div', 'button', 'a'],
+            FORCE_BODY: true
         });
 
         preview.innerHTML = clean;
 
-        // クラスの自動追加 (CSS適用のための補完)
+        // 7. クラス補完
         preview.querySelectorAll('td').forEach(td => {
-            if (td.querySelector('.work-icon')) td.classList.add('work-content');
-            if (td.querySelector('.stage-item')) td.classList.add('stage-content');
+            if (td.innerHTML.includes('work-icon')) td.classList.add('work-content');
+            if (td.innerHTML.includes('stage-item')) td.classList.add('stage-content');
         });
 
         charCount.textContent = markdown.length;
         charInfo.textContent = `行: ${markdown.split('\n').length}`;
     }
 
-    input.addEventListener('input', updatePreview);
-
-    // ▼▼▼ コピー機能 ▼▼▼
+    // 各種ボタン機能
     function execCopyHTML() {
-        updatePreview();
-        setTimeout(() => {
-            const htmlCode = preview.innerHTML;
-            if (!htmlCode) return;
-            navigator.clipboard.writeText(htmlCode).then(() => {
-                alert('✅ HTMLをコピーしました！');
-            });
-        }, 50);
+        navigator.clipboard.writeText(preview.innerHTML).then(() => alert('✅ HTMLをコピーしました！'));
     }
 
-    // HTMLファイル保存
     function downloadHTML() {
-        updatePreview();
         const content = preview.innerHTML;
-        const finalFile = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>栽培管理シート</title>
-    <style>${commonCSS}</style>
-</head>
-<body>
-    <div class="container">${content}</div>
-    <script>
-        function scrollToDetail(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
-        function backToTable() { window.scrollTo({top:0,behavior:'smooth'}); }
-        function openVirtualTab(id) { alert(id + " を開きます"); }
-    <\/script>
-</body>
-</html>`;
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(finalFile));
-        element.setAttribute('download', 'cultivation_sheet.html');
-        element.click();
+        const finalFile = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${commonCSS}</style></head>
+        <body><div class="container">${content}</div>
+        <script>
+            function scrollToDetail(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}
+            function backToTable(){window.scrollTo({top:0,behavior:'smooth'});}
+            function openVirtualTab(id){alert(id + " を開きます");}
+        <\/script></body></html>`;
+        const blob = new Blob([finalFile], {type: 'text/html'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'cultivation_sheet.html';
+        a.click();
     }
 
     function insertTemplate() {
-        input.value = `# 🌾 飼料用トウモロコシ栽培こよみ
-
-| 月 | 旬 | ステージ | 主な作業 |
-|---|---|---|---|
-| 4月 | 上旬 | [播種](seedingDetail) | [🌱ほ場準備](preparationDetail) [🧪基肥](fertilizerDetail) |
-
----
-
-### 🌱 ほ場準備 (id="preparationDetail")
-- 堆肥を散布します
-- 丁寧に耕起します
-
-### 🧪 基肥 (id="fertilizerDetail")
-- 10aあたり規定量を散布します`;
+        input.value = `## 📊 栽培スケジュール\n\n| 月 | 旬 | ステージ | 作業 |\n|---|---|---|---|\n| 4月 | 上旬 | [播種](seedingDetail) | [🌱ほ場準備](preparationDetail) |\n\n---\n\n### 🌱 ほ場準備 (id="preparationDetail")\n[🧮 除草剤希釈計算ツール（別タブ）](herbicideData)`;
         updatePreview();
     }
 
     function clearEditor() {
-        if(confirm("すべて消去しますか？")) {
-            input.value = "";
-            updatePreview();
-        }
+        if(confirm("すべて消去しますか？")) { input.value = ""; updatePreview(); }
     }
-    
-    function openVirtualTab(id) { alert(id + " を開きます"); }
 
+    input.addEventListener('input', updatePreview);
     updatePreview();
 </script>
 
