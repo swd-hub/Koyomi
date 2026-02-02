@@ -618,15 +618,18 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
                     <td class="work-content">
                         <div class="work-icon" onclick="scrollToDetail('preparationDetail')"><div class="work-icon-symbol">🌱</div>ほ場準備</div>
                         <div class="work-icon" onclick="scrollToDetail('fertilizerDetail')"><div class="work-icon-symbol">🧪</div>基肥</div>
+                        <div class="work-icon" onclick="scrollToDetail('birdControlDetail')"><div class="work-icon-symbol">🚫</div>鳥獣対策</div>
+                        <div class="work-icon" onclick="scrollToDetail('pestControlDetail')"><div class="work-icon-symbol">🐛</div>害虫防除</div>
                         <div class="work-icon" onclick="scrollToDetail('seedingDetail')"><div class="work-icon-symbol">🌾</div>播種</div>
+                        <div class="work-icon" onclick="scrollToDetail('herbicideDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
                     </td>
                 </tr>
                 <tr>
                     <td>中旬</td>
                     <td class="stage-content"><span class="stage-item stage-2">発芽</span></td>
                     <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('birdControlDetail')"><div class="work-icon-symbol">🚫</div>鳥獣対策</div>
-                        <div class="work-icon" onclick="scrollToDetail('herbicideDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
+                        <div class="work-icon" onclick="scrollToDetail('wildlifeControlDetail')"><div class="work-icon-symbol">🚫</div>獣害対策</div>
+                        <div class="work-icon" onclick="scrollToDetail('herbicideAfterDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
                     </td>
                 </tr>
                 <tr>
@@ -665,13 +668,14 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
                 <tr>
                     <td>中旬</td>
                     <td class="stage-content">ー</td>
-                    <td class="work-content">ー</td>
+                    <td class="work-content">
+                    <div class="work-icon" onclick="scrollToDetail('pestControlOccurrenceDetail')"><div class="work-icon-symbol">🐛</div>害虫防除</div>
+                    </td>
                 </tr>
                 <tr>
                     <td>下旬</td>
-                    <td class="stage-content"><span class="stage-item stage-4">雌穂分化</span></td>
+                    <td class="stage-content"><span class="stage-item stage-4">絹糸抽出期</span></td>
                     <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('pestControlOccurrenceDetail')"><div class="work-icon-symbol">🐛</div>害虫防除</div>
                     </td>
                 </tr>
                 <tr>
@@ -679,8 +683,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
                     <td>上旬</td>
                     <td class="stage-content">
                         <div class="split-cell">
-                            <span class="split-item stage-silking" onclick="scrollToDetail('maturityDetail')">絹糸抽出期</span>
-                            <span class="split-item stage-5">雌穂登熟</span>
+                            <span class="split-item stage-silking" onclick="scrollToDetail('maturityDetail')">雌穂の登熟</span>
                         </div>
                     </td>
                     <td class="work-content">
@@ -748,6 +751,29 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             <span>🧪 基肥</span>
             <button class="back-button" onclick="backToTable()">← 戻る</button>
         </h4>
+        <strong>10アールあたり施肥設計　例</strong>
+        
+        <table class="detail-table">
+    <thead>
+        <tr>
+            <th>肥料名</th>
+            <th>投入量</th>
+        </tr>
+        <tr>
+            <td>堆肥</td>
+            <td>高度化成14-14-14</td>
+        </tr>
+        <tr>
+            <td>3トン</td>
+            <td>80kg</td>
+        </tr>
+        <tr>
+            <td>5トン</td>
+            <td>70kg</td>
+        </thead>
+    </tbody>
+</table>
+
         
         <p>基肥の均一散布もしくは側条施肥</p>
     </div>
@@ -789,7 +815,8 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     
     <p>播種は日平均気温10度以上</p>
     <p>播種量 10アール6,000～6,500粒</p>
-    <p>条播のち鎮圧（真空播種機で播種時に鎮圧）</p>
+    <p>真空播種機を利用</p>
+    <p>条播のち覆土時に鎮圧</p>
     
     <p><strong>播種間隔</strong></p>
     
@@ -860,8 +887,29 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         <span>🐛 害虫防除</span>
         <button class="back-button" onclick="backToTable()">← 戻る</button>
     </h4>
+    <p><strong>ツマジロクサヨトウ、ネキリムシ類防除の薬剤を種子に塗抹処理</strong></p>
+    <table class="detail-table">
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>使用時期</th>
+                <th>薬量（10aあたり）</th>
+                <th>使用回数</th>
+                <th>使用方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ルミビアFS</td>
+                <td>播種前</td>
+                <td>乾燥種子1000粒当たり原液1.5～2.5mL</td>
+                <td>1回</td>
+                <td>塗抹処理</td>
+            </tr>
+        </tbody>
+    </table>
     
-    <p><strong>ネキリムシ防除の薬剤を全面散布</strong></p>
+    <p><strong>ネキリムシ防除の薬剤を散布</strong></p>
     <table class="detail-table">
         <thead>
             <tr>
@@ -891,7 +939,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         <button class="back-button" onclick="backToTable()">← 戻る</button>
     </h4>
     
-    <p>獣害対策を早めにする（鹿では播種直後に）</p>
+    <p>警戒地域では獣害対策を早めにする（鹿では播種直後に）</p>
     <p>電気牧柵等を設置する</p>
 </div>
 
@@ -1092,15 +1140,6 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             <td>—</td>
             <td>散布</td>
         </tr>
-        <tr>
-            <td><strong>ルミビアFS</strong></td>
-            <td>ツマジロクサヨトウ、ネキリムシ類</td>
-            <td>播種前</td>
-            <td>乾燥種子1000粒当たり原液1.5～2.5mL</td>
-            <td>—</td>
-            <td>1回</td>
-            <td>塗抹処理</td>
-        </tr>
     </tbody>
 </table>
 <div style="margin-top: 20px; text-align: right;"> <a href="javascript:void(0)" 
@@ -1150,7 +1189,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         <tbody>
             <tr>
                 <td><strong>絹糸抽出期</strong></td>
-                <td>約半分の株で絹糸が現れた日</td>
+                <td>ほ場の約半分の株で絹糸が現れた日</td>
             </tr>
             <tr>
                 <td><strong>糊熟期</strong></td>
