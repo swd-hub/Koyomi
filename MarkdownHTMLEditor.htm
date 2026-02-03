@@ -848,7 +848,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
 
-    // ========== 1. アイコン変換辞書 ==========
+    // 1. 自動変換用辞書
     const iconMap = {
         '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
         '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿',
@@ -862,7 +862,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
     };
 
-    // ========== 2. 基本機能 ==========
+    // 2. 基本ナビゲーション
     window.scrollToDetail = (id) => {
         const el = document.getElementById(id);
         if (el) {
@@ -874,6 +874,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 
     window.backToTable = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+    // 3. ファイル読み込み
     function readMarkdownFile(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -885,7 +886,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         reader.readAsText(file);
     }
 
-    // ========== 3. プレビュー更新ロジック ==========
+    // 4. プレビュー更新メインロジック
     function updatePreview() {
         let markdown = input.value;
         if (!markdown.trim()) { preview.innerHTML = ''; return; }
@@ -898,16 +899,14 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         const sections = [];
         tempDiv.querySelectorAll('h3').forEach(h3 => {
             const rawTitle = h3.textContent;
-            // 記号やアイコンを除いた純粋なキーワードを抽出
             const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
             const id = 'ref_' + Math.random().toString(36).substr(2, 9);
             
-            // 親のdetail-box（もしあれば）か、自身をラップ
             const detailBox = document.createElement('div');
             detailBox.className = 'detail-box';
             detailBox.id = id;
             
-            // 戻るボタンを右側に配置する構造
+            // 戻るボタンを右側に
             h3.innerHTML = `<span>${rawTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
             h3.style.display = 'flex';
             h3.style.justifyContent = 'space-between';
@@ -916,35 +915,30 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             h3.parentNode.insertBefore(detailBox, h3);
             detailBox.appendChild(h3);
             
-            // 次の要素から次のh3または区切り線までをdetail-boxに入れる
             let next = detailBox.nextSibling;
             while (next && next.tagName !== 'H3' && !next.classList?.contains('detail-box')) {
                 let temp = next.nextSibling;
                 detailBox.appendChild(next);
                 next = temp;
             }
-
             sections.push({ key: cleanKey, id: id });
         });
 
-        // --- B. テーブル内の単語をアイコン化 & クリッカブル化 ---
+        // --- B. テーブル内の単語をアイコン化 & ホバーリンク化 ---
         tempDiv.querySelectorAll('td').forEach(td => {
             let text = td.innerHTML;
-            
-            // 各キーワードに対して処理
             Object.keys(iconMap).forEach(key => {
                 if (text.includes(key)) {
                     const icon = iconMap[key];
-                    // アイコン付与（重複防止）
+                    // アイコン付与
                     if (!text.includes(icon)) {
                         text = text.replace(new RegExp(key, 'g'), `${icon} ${key}`);
                     }
-                    
-                    // 対応する詳細セクションがあるか確認
+                    // 詳細リンク紐付け
                     const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
                     if (target) {
                         const linkStr = `${icon} ${key}`;
-                        const clickable = `<span class="stage-box stage-mark" style="cursor:pointer" onclick="scrollToDetail('${target.id}')">${linkStr}</span>`;
+                        const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${linkStr}</span>`;
                         text = text.split(linkStr).join(clickable);
                     }
                 }
@@ -952,10 +946,8 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             td.innerHTML = text;
         });
 
-        // --- C. テーブルラッパー ---
+        // --- C. 最終出力 ---
         const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
-
-        // サニタイズ
         preview.innerHTML = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
             ADD_ATTR: ['onclick', 'style', 'id', 'class'],
             ADD_TAGS: ['span', 'div', 'button', 'table', 'tbody', 'thead', 'h3', 'h4'],
@@ -966,18 +958,21 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         charInfo.textContent = markdown.split('\n').length;
     }
 
-    // イベントリスナー設定
-    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) readMarkdownFile(e.target.files[0]); });
+    // 5. イベント設定
     input.addEventListener('input', updatePreview);
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) readMarkdownFile(e.target.files[0]); });
     input.addEventListener('click', () => { if (input.value.trim() === '') fileInput.click(); });
     
-    // ドラッグ＆ドロップ
     textareaContainer.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
     textareaContainer.addEventListener('dragleave', () => { dropZone.classList.remove('active'); });
     textareaContainer.addEventListener('drop', (e) => {
         e.preventDefault(); dropZone.classList.remove('active');
         if (e.dataTransfer.files.length > 0) readMarkdownFile(e.dataTransfer.files[0]);
     });
+
+    function execCopyHTML() { navigator.clipboard.writeText(preview.innerHTML).then(() => alert('✅ HTMLをコピーしました！')); }
+    function showHTML() { htmlDisplay.textContent = preview.innerHTML; document.getElementById('htmlModal').style.display = 'block'; }
+    function closeHTML() { document.getElementById('htmlModal').style.display = 'none'; }
 
     updatePreview();
 </script>
@@ -994,6 +989,35 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 .back-button {
     margin-left: auto; /* 右側に寄せる */
 }
+/* 追加のスタイル：ホバー演出など */
+.clickable-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.clickable-item:hover {
+    background-color: #f0f0f0; /* 薄いグレー背景 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 軽い影 */
+    transform: translateY(-1px); /* 少し浮く */
+}
+
+.back-button:hover {
+    background-color: #e0e0e0;
+    opacity: 0.8;
+}
+
+.highlight-flash {
+    animation: flash-bg 2s ease-out;
+}
+
+@keyframes flash-bg {
+    0% { background-color: #fff9c4; border-left: 5px solid #ffd600; }
+    100% { background-color: transparent; border-left: 5px solid transparent; }
+}
+
 </style>
 
 </body>
