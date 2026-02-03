@@ -848,77 +848,31 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
 
-    // ========== 1. アイコン変換辞書 (iconMap) ==========
+    // ========== 1. アイコン変換辞書 ==========
     const iconMap = {
         '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
         '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿',
         '絹糸': '🌾', '登熟': '🌾', '出穂': '🌾',
         '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
-        '黄熟': '🟡', '完熟': '✅', '開花': '🌷', '結実': '🥨',
+        '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
         'ほ場準備': '🌱', '耕うん': '🚜', '畝立て': '🚜',
         '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
         '鳥獣': '🚫', '獣害': '🚫',
         '害虫': '🐛', '防除': '🐛', '除草': '💧',
-        '収穫': '✂️', '剪定': '✂️', '倒伏': '⚠️', '台風': '🌀',
-        '見回り': '🔍', '出荷': '📦'
+        '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
     };
 
-    // ========== 2. 自動アイコン付与関数 ==========
-    function applyAutoIcons(htmlString) {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = htmlString;
-        const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
-        let node;
-        while (node = walker.nextNode()) {
-            let text = node.nodeValue;
-            Object.keys(iconMap).forEach(key => {
-                const icon = iconMap[key];
-                if (text.includes(key)) {
-                    const regex = new RegExp(key, 'g');
-                    text = text.replace(regex, `${icon} ${key}`);
-                    // アイコンの重複(🌱 🌱 播種など)を防止
-                    const cleanup = new RegExp(`${icon}\\s*${icon}`, 'g');
-                    text = text.replace(cleanup, icon);
-                }
-            });
-            node.nodeValue = text;
-        }
-        return tempDiv.innerHTML;
-    }
-
-    // ========== 3. 既存の機能 (そのまま維持) ==========
+    // ========== 2. 基本機能 ==========
     window.scrollToDetail = (id) => {
         const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            el.classList.add('highlight-flash');
+            setTimeout(() => el.classList.remove('highlight-flash'), 2000);
+        }
     };
 
     window.backToTable = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) readMarkdownFile(file);
-    });
-
-    input.addEventListener('click', (e) => {
-        if (input.value.trim() === '') fileInput.click();
-    });
-
-    textareaContainer.addEventListener('dragover', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropZone.classList.add('active');
-    });
-
-    textareaContainer.addEventListener('dragleave', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        if (e.target === textareaContainer) dropZone.classList.remove('active');
-    });
-
-    textareaContainer.addEventListener('drop', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropZone.classList.remove('active');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) readMarkdownFile(files[0]);
-    });
 
     function readMarkdownFile(file) {
         const reader = new FileReader();
@@ -931,72 +885,116 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         reader.readAsText(file);
     }
 
-    function showHTML() {
-        htmlDisplay.textContent = preview.innerHTML;
-        htmlModal.style.display = 'block';
-    }
-
-    function closeHTML() { htmlModal.style.display = 'none'; }
-    window.onclick = function(event) { if (event.target === htmlModal) closeHTML(); };
-
-    // ========== 4. プレビュー更新 (ここを微調整) ==========
+    // ========== 3. プレビュー更新ロジック ==========
     function updatePreview() {
         let markdown = input.value;
         if (!markdown.trim()) { preview.innerHTML = ''; return; }
 
         let html = marked.parse(markdown);
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
 
-        // アイコン付与を実行
-        html = applyAutoIcons(html);
+        // --- A. 詳細セクションのID付与と整形 ---
+        const sections = [];
+        tempDiv.querySelectorAll('h3').forEach(h3 => {
+            const rawTitle = h3.textContent;
+            // 記号やアイコンを除いた純粋なキーワードを抽出
+            const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
+            const id = 'ref_' + Math.random().toString(36).substr(2, 9);
+            
+            // 親のdetail-box（もしあれば）か、自身をラップ
+            const detailBox = document.createElement('div');
+            detailBox.className = 'detail-box';
+            detailBox.id = id;
+            
+            // 戻るボタンを右側に配置する構造
+            h3.innerHTML = `<span>${rawTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
+            h3.style.display = 'flex';
+            h3.style.justifyContent = 'space-between';
+            h3.style.alignItems = 'center';
 
-        // リンク・詳細・テーブル処理 (元のロジックを維持)
-        html = html.replace(/<a\s+href="([^"]+)">([\s\S]*?)<\/a>/g, (match, href, text) => {
-            return `<span class="stage-box stage-mark" onclick="scrollToDetail('${href}');">${text}</span>`;
+            h3.parentNode.insertBefore(detailBox, h3);
+            detailBox.appendChild(h3);
+            
+            // 次の要素から次のh3または区切り線までをdetail-boxに入れる
+            let next = detailBox.nextSibling;
+            while (next && next.tagName !== 'H3' && !next.classList?.contains('detail-box')) {
+                let temp = next.nextSibling;
+                detailBox.appendChild(next);
+                next = temp;
+            }
+
+            sections.push({ key: cleanKey, id: id });
         });
 
-        html = html.replace(/<h3>(.*?)<\/h3>/g, (match, title) => {
-            const id = title.replace(/[^a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '_').toLowerCase();
-            return `</div><div class="detail-box" id="${id}"><h4><span>${title}</span><button class="back-button" onclick="backToTable()">← 戻る</button></h4>`;
+        // --- B. テーブル内の単語をアイコン化 & クリッカブル化 ---
+        tempDiv.querySelectorAll('td').forEach(td => {
+            let text = td.innerHTML;
+            
+            // 各キーワードに対して処理
+            Object.keys(iconMap).forEach(key => {
+                if (text.includes(key)) {
+                    const icon = iconMap[key];
+                    // アイコン付与（重複防止）
+                    if (!text.includes(icon)) {
+                        text = text.replace(new RegExp(key, 'g'), `${icon} ${key}`);
+                    }
+                    
+                    // 対応する詳細セクションがあるか確認
+                    const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+                    if (target) {
+                        const linkStr = `${icon} ${key}`;
+                        const clickable = `<span class="stage-box stage-mark" style="cursor:pointer" onclick="scrollToDetail('${target.id}')">${linkStr}</span>`;
+                        text = text.split(linkStr).join(clickable);
+                    }
+                }
+            });
+            td.innerHTML = text;
         });
 
-        html = html.replace(/<table>/g, '<div class="table-wrapper"><table>');
-        html = html.replace(/<\/table>/g, '</table></div>');
+        // --- C. テーブルラッパー ---
+        const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
 
-        const clean = DOMPurify.sanitize(`<div class="content-body">${html}</div>`, {
-            ADD_ATTR: ['onclick', 'style', 'rowspan', 'colspan', 'id'],
-            ADD_TAGS: ['span', 'div', 'button', 'table', 'tbody', 'thead'],
+        // サニタイズ
+        preview.innerHTML = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
+            ADD_ATTR: ['onclick', 'style', 'id', 'class'],
+            ADD_TAGS: ['span', 'div', 'button', 'table', 'tbody', 'thead', 'h3', 'h4'],
             FORCE_BODY: true
         });
 
-        preview.innerHTML = clean;
         charCount.textContent = markdown.length;
         charInfo.textContent = markdown.split('\n').length;
     }
 
-    function execCopyHTML() {
-        navigator.clipboard.writeText(preview.innerHTML).then(() => alert('✅ HTMLをコピーしました！'));
-    }
-
-    function downloadHTML() {
-        const content = preview.innerHTML;
-        const finalFile = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><style>${commonCSS}</style></head><body><div class="container">${content}</div><script>function scrollToDetail(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});}function backToTable(){window.scrollTo({top:0,behavior:'smooth'});}<\/script></body></html>`;
-        const blob = new Blob([finalFile], { type: 'text/html; charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'cultivation_sheet.html';
-        a.click();
-    }
-
-    function insertTemplate() {
-        input.value = `## 📊 栽培スケジュール\n\n| 月 | 旬 | 生育ステージ | 主な作業 |\n|:---:|:---:|:---:|:---|\n| 4月 | 上旬 | 播種 | ほ場準備 |\n| | 中旬 | 発芽 | 除草剤散布 |`;
-        updatePreview();
-    }
-
-    function clearEditor() { if (confirm("すべて消去しますか？")) { input.value = ""; updatePreview(); } }
-
+    // イベントリスナー設定
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) readMarkdownFile(e.target.files[0]); });
     input.addEventListener('input', updatePreview);
+    input.addEventListener('click', () => { if (input.value.trim() === '') fileInput.click(); });
+    
+    // ドラッグ＆ドロップ
+    textareaContainer.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('active'); });
+    textareaContainer.addEventListener('dragleave', () => { dropZone.classList.remove('active'); });
+    textareaContainer.addEventListener('drop', (e) => {
+        e.preventDefault(); dropZone.classList.remove('active');
+        if (e.dataTransfer.files.length > 0) readMarkdownFile(e.dataTransfer.files[0]);
+    });
+
     updatePreview();
 </script>
+
+<style>
+/* ハイライト演出用のCSSを自動追加 */
+.highlight-flash {
+    animation: flash-bg 2s ease-out;
+}
+@keyframes flash-bg {
+    0% { background-color: #fff9c4; }
+    100% { background-color: transparent; }
+}
+.back-button {
+    margin-left: auto; /* 右側に寄せる */
+}
+</style>
 
 </body>
 </html>
