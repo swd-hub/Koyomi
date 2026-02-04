@@ -837,19 +837,38 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     const textareaContainer = document.getElementById('textarea-container');
 
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
-
-    const iconMap = {
-        '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
-        '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿',
-        '絹糸': '🌾', '登熟': '🌾', '出穂': '🌾',
-        '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
-        '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
-        'ほ場準備': '🌱', '耕うん': '🚜', '畝立て': '🚜',
-        '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
-        '鳥獣': '🚫', '獣害': '🚫',
-        '害虫': '🐛', '防除': '🐛', '除草': '💧',
-        '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
-    };
+const iconMap = {
+    // 播種・育苗関連
+    '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
+    '育苗箱施薬': '💊', 
+    
+    // 田んぼ準備関連
+    'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
+    
+    // 田植え・移植関連
+    '田植': '🌱', '移植': '🌱',
+    
+    // 生育ステージ
+    '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿', '最高分げつ': '🌿',
+    '活着': '🌱', '幼穂形成': '🌾', '出穂': '🌾',
+    '絹糸': '🌾', '登熟': '🌾', '成熟': '🌾',
+    '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
+    '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
+    
+    // 施肥関連
+    '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
+    
+    // 水管理関連
+    '中干し': '🌊', '落水': '💧',
+    
+    // 除草・防除関連
+    '除草剤散布': '🚫', '除草': '🚫',
+    '害虫防除': '🐛', '害虫': '🐛', '防除': '🐛',
+    
+    // その他
+    '鳥獣': '🚫', '獣害': '🚫',
+    '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
+};
 
     // 1. ファイル読み込み関数
     function readMarkdownFile(file) {
@@ -918,22 +937,34 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             sections.push({ key: cleanKey, id: id });
         });
 
-        tempDiv.querySelectorAll('td').forEach(td => {
-            let text = td.innerHTML;
-            Object.keys(iconMap).forEach(key => {
-                if (text.includes(key)) {
-                    const icon = iconMap[key];
-                    if (!text.includes(icon)) text = text.replace(new RegExp(key, 'g'), `${icon} ${key}`);
-                    const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
-                    if (target) {
-                        const linkStr = `${icon} ${key}`;
-                        const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${linkStr}</span>`;
-                        text = text.split(linkStr).join(clickable);
-                    }
-                }
-            });
-            td.innerHTML = text;
-        });
+tempDiv.querySelectorAll('td').forEach(td => {
+    let html = td.innerHTML;
+    
+    // キーを長い順にソート（「ほ場準備」を「準備」より先に処理）
+    const sortedKeys = Object.keys(iconMap).sort((a, b) => b.length - a.length);
+    
+    sortedKeys.forEach(key => {
+        const icon = iconMap[key];
+        
+        // キーが含まれているかチェック
+        if (html.includes(key)) {
+            // 対応するセクションを探す
+            const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+            
+            if (target) {
+                // クリッカブル版：セクションが存在する場合
+                const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
+                html = html.split(key).join(clickable);
+            } else {
+                // 通常版：セクションが存在しない場合
+                const replacement = `${icon} ${key}`;
+                html = html.split(key).join(replacement);
+            }
+        }
+    });
+    
+    td.innerHTML = html;
+});
 
         const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
         const sanitized = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
