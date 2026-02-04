@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>栽培こよみエディタ（高機能統合版）</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+<style>
+    /* 基本設定 */
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        padding: 10px;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+    }
+
+    /* ▼▼▼ 見出しアイコン (CSS版) ▼▼▼ */
+    h1 {
+        text-align: center;
+        color: #2d5016;
+        margin-bottom: 5px;
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px; 
+    }
+    h1::before { content: '📅'; font-size: 2.2rem; }
+
+    h2 {
+        color: #2d5016;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+        border-bottom: 3px solid #2d5016;
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    h2::before { content: '🌿'; font-size: 1.6rem; }
+
+    h3 {
+        color: #2d5016;
+        margin-top: 20px;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+        border-left: 4px solid #2d5016;
+        padding-left: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* 戻るボタン配置用 */
+        gap: 8px;
+    }
+    /* h3のアイコンはJavaScript側で制御される場合もありますが、CSSでも付与 */
+    h3::before { content: '📌'; font-size: 1.2rem; }
+
+    /* 戻るボタン */
+    .back-button {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        background: #666;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: normal;
+    }
+    .back-button:hover { background: #444; }
+
+    /* ▼▼▼ エディタレイアウト ▼▼▼ */
+    .editor-layout { display: flex; gap: 20px; width: 100%; height: calc(100vh - 50px); } /* フッター分引く */
+    .editor-pane, .preview-pane { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+    
+    .toolbar {
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        background: #e0e0e0;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .textarea-container {
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #ddd;
+        border-top: none;
+        background: white;
+    }
+
+    textarea, #html-display-area {
+        width: 100%;
+        flex-grow: 1;
+        padding: 15px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        border: none;
+        resize: none;
+        background: white;
+        color: #333;
+        outline: none;
+    }
+    textarea:focus { background-color: #f0f8ff; }
+
+    /* HTMLソース表示エリア（初期は非表示） */
+    #html-display-area {
+        display: none;
+        background: #333;
+        color: #eee;
+    }
+
+    /* プレビューエリア */
+    .preview-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: white;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+    
+    /* ▼▼▼ コンテンツスタイル (Markdown変換後) ▼▼▼ */
+    .container { max-width: 100%; }
+    
+    /* テーブルスタイル */
+    .table-wrapper { overflow-x: auto; margin-bottom: 20px; border: 1px solid #ddd; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th { background: #2d5016; color: white; padding: 10px; border: 1px solid #1a3a0d; }
+    td { padding: 10px; border: 1px solid #ddd; text-align: center; vertical-align: middle; }
+    
+    /* セル内の自動装飾 */
+    .clickable-item {
+        color: #2d5016;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-color: #a5d6a7;
+        transition: all 0.2s;
+        display: inline-block;
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+    .clickable-item:hover {
+        background-color: #e8f5e9;
+        transform: scale(1.05);
+    }
+
+    /* 詳細ボックス */
+    .detail-box {
+        background: #f0f8ff;
+        border: 2px solid #2d5016;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        scroll-margin-top: 10px; /* スクロール時の余白 */
+    }
+
+    /* 強調アニメーション */
+    @keyframes flash {
+        0% { background-color: #fffde7; transform: scale(1); }
+        50% { background-color: #fff59d; transform: scale(1.02); }
+        100% { background-color: #f0f8ff; transform: scale(1); }
+    }
+    .highlight-flash {
+        animation: flash 1s ease-out;
+    }
+
+    /* ▼▼▼ UI部品 ▼▼▼ */
+    button {
+        padding: 6px 12px;
+        cursor: pointer;
+        background: #2d5016;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+    button:hover { background: #1a3a0d; }
+    button.secondary { background: #666; }
+    button.secondary:hover { background: #444; }
+    button.orange { background: #ff9800; }
+    button.orange:hover { background: #f57c00; }
+
+    /* ステータスバー */
+    .status-bar {
+        height: 30px;
+        background: #e0e0e0;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        font-size: 0.8rem;
+        color: #555;
+        gap: 15px;
+        border-top: 1px solid #ccc;
+    }
+    .file-info { display: none; background: #c8e6c9; padding: 2px 8px; border-radius: 10px; color: #1b5e20; }
+    .file-info.show { display: inline-block; }
+
+    /* ドラッグ＆ドロップ */
+    .drop-zone {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(45, 80, 22, 0.1); border: 3px dashed #2d5016;
+        display: none; align-items: center; justify-content: center;
+        pointer-events: none; z-index: 100;
+        color: #2d5016; font-weight: bold; font-size: 1.2rem;
+        backdrop-filter: blur(2px);
+    }
+    .drop-zone.active { display: flex; }
+    
+    /* 隠し要素 */
+    #file-input { display: none; }
+</style>
+</head>
+<body>
+
+<div class="editor-layout">
+    <div class="editor-pane">
+        <div class="toolbar">
+            <span style="font-weight:bold; color:#2d5016;">📝 入力 (ダブルクリックで開く)</span>
+            <div>
+                <button class="secondary" onclick="insertTemplate()">雛形</button>
+                <button class="secondary" onclick="clearEditor()">消去</button>
+            </div>
+        </div>
+        
+        <div class="textarea-container" id="textarea-container">
+            <textarea id="markdown-input" placeholder="ここにMarkdownを入力、またはファイルをドロップ..."></textarea>
+            <div class="drop-zone" id="drop-zone">📂 ファイルをここにドロップ</div>
+        </div>
+        <input type="file" id="file-input" accept=".md,.txt,.html">
+    </div>
+
+    <div class="preview-pane">
+        <div class="toolbar">
+            <span style="font-weight:bold; color:#333;">👁️ プレビュー</span>
+            <div>
+                <button id="toggle-btn" class="orange" onclick="toggleDisplayMode(this)">📄 HTML表示</button>
+                <button onclick="execCopyHTML()">📋 コピー</button>
+                <button onclick="downloadHTML()">💾 保存</button>
+            </div>
+        </div>
+        
+        <div class="preview-area" id="preview"></div>
+        <textarea id="html-display-area" readonly></textarea>
+    </div>
+</div>
+
+<div class="status-bar">
+    <span id="file-info" class="file-info">📄 <span id="file-name"></span></span>
+    <span>文字数: <span id="char-count">0</span></span>
+    <span>行数: <span id="char-info">0</span></span>
+</div>
+
+<script>
+    const input = document.getElementById('markdown-input');
+    const preview = document.getElementById('preview');
+    const charCount = document.getElementById('char-count');
+    const charInfo = document.getElementById('char-info');
+    const htmlDisplayArea = document.getElementById('html-display-area');
+    const fileInput = document.getElementById('file-input');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const textareaContainer = document.getElementById('textarea-container');
+
+    // スタイルタグの中身を取得（保存時にHTMLに埋め込むため）
+    const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
+
+    // キーワードとアイコンのマッピング
+    const iconMap = {
+        // 播種・育苗関連
+        '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱', '施薬': '💊', 
+        // 田んぼ準備関連
+        'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
+        // 田植え・移植関連
+        '田植': '🌱', '移植': '🌱',
+        // 生育ステージ
+        '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿', '最高': '🌿',
+        '活着': '🌱', '幼穂形成': '🌾', '出穂': '🌾',
+        '絹糸': '🌾', '登熟': '🌾', '成熟': '🌾',
+        '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
+        '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
+        // 施肥関連
+        '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
+        // 水管理関連
+        '中干し': '🌊', '落水': '💧',
+        // 除草・防除関連
+        '除草': '🚫', '害虫': '🐛', '防除': '🐛',
+        // その他
+        '鳥獣': '🚫', '獣害': '🚫', '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
+    };
+
+    // 1. ファイル読み込み関数
+    function readMarkdownFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            input.value = e.target.result;
+            fileName.textContent = file.name;
+            fileInfo.classList.add('show');
+            updatePreview();
+        };
+        reader.readAsText(file);
+    }
+
+    // --- 2. 修正：ダブルクリックイベント ---
+    textareaContainer.addEventListener('dblclick', (e) => {
+        e.stopPropagation(); 
+        console.log("File open triggered");
+        fileInput.click();
+    });
+
+    // ファイル選択後の処理
+    fileInput.onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            readMarkdownFile(e.target.files[0]);
+        }
+        e.target.value = '';
+    };
+
+    // ドラッグ＆ドロップ処理
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        textareaContainer.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+    
+    textareaContainer.addEventListener('dragenter', () => dropZone.classList.add('active'));
+    textareaContainer.addEventListener('dragleave', (e) => {
+         if (!textareaContainer.contains(e.relatedTarget)) dropZone.classList.remove('active');
+    });
+    textareaContainer.addEventListener('drop', (e) => {
+        dropZone.classList.remove('active');
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if(files.length > 0) readMarkdownFile(files[0]);
+    });
+
+    // 3. プレビュー更新ロジック
+    function updatePreview() {
+        let markdown = input.value;
+        if (!markdown.trim()) { 
+            preview.innerHTML = ''; 
+            if(htmlDisplayArea) htmlDisplayArea.value = '';
+            // カウントリセット
+            charCount.textContent = 0;
+            charInfo.textContent = 0;
+            return; 
+        }
+
+        // Markedオプション設定
+        marked.setOptions({ breaks: true, gfm: true });
+        let html = marked.parse(markdown);
+        
+        // 仮のDIVを作ってDOM操作
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        const sections = [];
+        
+        // h3タグを検出し、詳細ボックス(detail-box)でラップする処理
+        tempDiv.querySelectorAll('h3').forEach(h3 => {
+            const rawTitle = h3.textContent;
+            // リンク照合用のキー作成（日本語と漢字のみ抽出）
+            const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
+            const id = 'ref_' + Math.random().toString(36).substr(2, 9);
+            
+            // detail-boxの作成
+            const detailBox = document.createElement('div');
+            detailBox.className = 'detail-box';
+            detailBox.id = id;
+            
+            // 見出しの中身を書き換え（戻るボタン追加）
+            // ※CSSでアイコンをつけているので、アイコン用のspanなどは不要だが、
+            // JSで制御しているのでそのまま適用
+            h3.innerHTML = `<span>${rawTitle}</span><button class="back-button" onclick="backToTable()">↑ カレンダーへ</button>`;
+            
+            // h3をラップする
+            h3.parentNode.insertBefore(detailBox, h3);
+            detailBox.appendChild(h3);
+            
+            // h3に続く要素をdetail-boxに取り込む
+            let next = detailBox.nextSibling;
+            while (next && next.tagName !== 'H3' && next.tagName !== 'H2' && !next.classList?.contains('detail-box')) {
+                let temp = next.nextSibling;
+                detailBox.appendChild(next);
+                next = temp;
+            }
+            sections.push({ key: cleanKey, id: id });
+        });
+
+        // テーブル内のキーワード置換処理
+        tempDiv.querySelectorAll('td').forEach(td => {
+            let cellHtml = td.innerHTML;
+            
+            // キーを長い順にソート（誤爆防止）
+            const sortedKeys = Object.keys(iconMap).sort((a, b) => b.length - a.length);
+            
+            sortedKeys.forEach(key => {
+                const icon = iconMap[key];
+                
+                // キーが含まれているかチェック
+                if (cellHtml.includes(key)) {
+                    // 対応するセクションを探す
+                    const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+                    
+                    if (target) {
+                        // クリッカブル版
+                        const clickable = `<span class="clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
+                        // 単純な置換だとHTMLタグを壊す可能性があるので注意が必要だが、ここでは簡易実装
+                        cellHtml = cellHtml.split(key).join(clickable);
+                    } else {
+                        // 通常版（アイコン付与のみ）
+                        const replacement = `${icon} ${key}`;
+                        cellHtml = cellHtml.split(key).join(replacement);
+                    }
+                }
+            });
+            td.innerHTML = cellHtml;
+        });
+
+        // テーブルをラッパーで囲む（レスポンシブ対応）
+        const finalHtml = tempDiv.innerHTML
+            .replace(/<table>/g, '<div class="table-wrapper"><table>')
+            .replace(/<\/table>/g, '</table></div>');
+
+        // サニタイズ（許可するタグと属性を指定）
+        const sanitized = DOMPurify.sanitize(finalHtml, {
+            ADD_ATTR: ['onclick', 'style', 'id', 'class'],
+            ADD_TAGS: ['button'],
+        });
+
+        preview.innerHTML = sanitized;
+        if (htmlDisplayArea) htmlDisplayArea.value = sanitized;
+
+        // 文字数カウント
+        charCount.textContent = markdown.length;
+        charInfo.textContent = markdown.split('\n').length;
+    }
+
+    // 4. トグル表示
+    let isHtmlMode = false;
+    function toggleDisplayMode(btn) {
+        isHtmlMode = !isHtmlMode;
+        if (isHtmlMode) {
+            preview.style.display = 'none';
+            htmlDisplayArea.style.display = 'block';
+            btn.textContent = '👁️ プレビューに戻す';
+            btn.style.backgroundColor = '#666'; // 色変更
+        } else {
+            preview.style.display = 'block';
+            htmlDisplayArea.style.display = 'none';
+            btn.textContent = '📄 HTML表示';
+            btn.style.backgroundColor = '#ff9800'; 
+        }
+    }
+
+    // 5. コピー・保存・テンプレート
+    function execCopyHTML() {
+        const code = isHtmlMode ? htmlDisplayArea.value : htmlDisplayArea.value; // 常に最新のHTMLを取得
+        navigator.clipboard.writeText(code).then(() => alert('✅ HTMLをクリップボードにコピーしました'));
+    }
+
+    function downloadHTML() {
+        const content = htmlDisplayArea.value; // 生成されたHTMLを使用
+        // CSSとスクリプトを含めた完全なHTMLファイルを生成
+        const finalFile = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>栽培こよみ</title>
+<style>
+${commonCSS}
+/* 保存版用に不要なスタイルを上書き */
+body { height: auto; overflow: auto; padding: 20px; }
+.editor-layout, .toolbar, .status-bar, .back-button { display: none !important; }
+.container { max-width: 900px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="container">
+${content}
+</div>
+<script>
+// 保存版用の簡易スクリプト
+function scrollToDetail(id){
+    const el=document.getElementById(id);
+    if(el){
+        el.scrollIntoView({behavior:'smooth'});
+        el.classList.add('highlight-flash');
+        setTimeout(()=>el.classList.remove('highlight-flash'),1000);
+    }
+}
+function backToTable(){window.scrollTo({top:0,behavior:'smooth'});}
+<\/script>
+</body>
+</html>`;
+        
+        const blob = new Blob([finalFile], { type: 'text/html; charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'my_cultivation_calendar.html';
+        a.click();
+    }
+
+    function insertTemplate() {
+        if(!confirm('現在の内容を消去してテンプレートを挿入しますか？')) return;
+        input.value = `# トマトの栽培こよみ
+品種：桃太郎 / ナス科
+
+## 📅 栽培カレンダー
+| 月 | 旬 | 生育ステージ | 主な作業 |
+|:---:|:---:|:---:|:---|
+| 3月 | 上旬 | 播種 | 育苗土の準備 |
+| 3月 | 下旬 | 発芽 | 水やり管理 |
+| 4月 | 下旬 | 定植 | ほ場準備・施肥 |
+| 6月 | 中旬 | 開花 | 追肥・芽かき |
+| 7月 | 上旬 | 収穫 | 鳥獣対策 |
+
+---
+
+### 播種
+セルトレイに種をまき、20℃～25℃で管理します。乾燥させないように注意してください。
+
+### 定植
+本葉が8枚程度になったら畑に植え付けます。
+
+### 収穫
+赤く熟したものから順次収穫します。
+`;
+        updatePreview();
+    }
+
+    function clearEditor() { 
+        if (confirm("すべて消去しますか？")) { 
+            input.value = ""; 
+            updatePreview(); 
+            // ファイル情報クリア
+            fileName.textContent = "";
+            fileInfo.classList.remove('show');
+        } 
+    }
+
+    // ナビゲーション（グローバル関数として定義）
+    window.scrollToDetail = (id) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            el.classList.add('highlight-flash');
+            setTimeout(() => el.classList.remove('highlight-flash'), 2000);
+        }
+    };
+    window.backToTable = () => {
+        const table = document.querySelector('table');
+        if(table) {
+            table.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    input.addEventListener('input', updatePreview);
+    
+    // 初期実行
+    window.addEventListener('DOMContentLoaded', () => {
+        // デモ用にテンプレート挿入（不要ならコメントアウト）
+        insertTemplate();
+    });
+</script>
+
+</body>
+</html>
