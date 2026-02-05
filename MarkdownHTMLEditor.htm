@@ -837,38 +837,41 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     const textareaContainer = document.getElementById('textarea-container');
 
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
-const iconMap = {
-    // 播種・育苗関連
-    '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
-    '施薬': '💊', 
-    
-    // 田んぼ準備関連
-    'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
-    
-    // 田植え・移植関連
-    '田植': '🌱', '移植': '🌱',
-    
-    // 生育ステージ
-    '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿', '最高': '🌿',
-    '活着': '🌱', '幼穂形成': '🌾', '出穂': '🌾',
-    '絹糸': '🌾', '登熟': '🌾', '成熟': '🌾',
-    '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
-    '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
-    
-    // 施肥関連
-    '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
-    
-    // 水管理関連
-    '中干し': '🌊', '落水': '💧',
-    
-    // 除草・防除関連
-    '除草': '🚫',
-    '害虫': '🐛', '防除': '🐛',
-    
-    // その他
-    '鳥獣': '🚫', '獣害': '🚫',
-    '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
-};
+    const iconMap = {
+        // 播種・育苗関連
+        '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
+        '施薬': '💊', 
+        
+        // 田んぼ準備関連
+        'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
+        
+        // 田植え・移植関連
+        '田植': '🌱', '移植': '🌱',
+        
+        // 生育ステージ
+        '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿', '最高': '🌿',
+        '活着': '🌱', '幼穂形成': '🌾', '出穂': '🌾',
+        '絹糸': '🌾', '登熟': '🌾', '成熟': '🌾',
+        '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
+        '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
+        
+        // 施肥関連
+        '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
+        
+        // 水管理関連
+        '中干し': '🌊', '落水': '💧',
+        
+        // 除草・防除関連
+        '除草': '🚫',
+        '害虫': '🐛', '防除': '🐛',
+        
+        // その他
+        '鳥獣': '🚫', '獣害': '🚫',
+        '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
+    };
+
+    // キーを長い順にソート（共通で使用するためここで定義）
+    const sortedKeys = Object.keys(iconMap).sort((a, b) => b.length - a.length);
 
     // 1. ファイル読み込み関数
     function readMarkdownFile(file) {
@@ -883,21 +886,17 @@ const iconMap = {
         reader.readAsText(file);
     }
 
-    // --- 2. 修正：ダブルクリックイベント (ここをシンプルにしました) ---
-    // 親要素に対して1つだけ登録します
+    // --- 2. 修正：ダブルクリックイベント ---
     textareaContainer.addEventListener('dblclick', (e) => {
-        // 子要素（テキストエリア等）へのクリックが重複して走らないように停止
         e.stopPropagation(); 
         console.log("File open triggered");
         fileInput.click();
     });
 
-    // ファイル選択後の処理
     fileInput.onchange = (e) => {
         if (e.target.files && e.target.files[0]) {
             readMarkdownFile(e.target.files[0]);
         }
-        // これで同じファイルを再度選んでも反応するようになります
         e.target.value = '';
     };
 
@@ -915,14 +914,28 @@ const iconMap = {
         tempDiv.innerHTML = html;
 
         const sections = [];
+
+        // --- h3 (詳細見出し) の処理修正 ---
         tempDiv.querySelectorAll('h3').forEach(h3 => {
             const rawTitle = h3.textContent;
+            let displayTitle = rawTitle; // 表示用のタイトル変数を作成
+
+            // 詳細見出しにもアイコンを適用
+            sortedKeys.forEach(key => {
+                if (displayTitle.includes(key)) {
+                    const icon = iconMap[key];
+                    displayTitle = displayTitle.split(key).join(`${icon} ${key}`);
+                }
+            });
+
             const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
             const id = 'ref_' + Math.random().toString(36).substr(2, 9);
             const detailBox = document.createElement('div');
             detailBox.className = 'detail-box';
             detailBox.id = id;
-            h3.innerHTML = `<span>${rawTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
+            
+            // rawTitleの代わりにアイコン付きの displayTitle を使用
+            h3.innerHTML = `<span>${displayTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
             h3.style.display = 'flex';
             h3.style.justifyContent = 'space-between';
             h3.style.alignItems = 'center';
@@ -937,34 +950,32 @@ const iconMap = {
             sections.push({ key: cleanKey, id: id });
         });
 
-tempDiv.querySelectorAll('td').forEach(td => {
-    let html = td.innerHTML;
-    
-    // キーを長い順にソート（「ほ場準備」を「準備」より先に処理）
-    const sortedKeys = Object.keys(iconMap).sort((a, b) => b.length - a.length);
-    
-    sortedKeys.forEach(key => {
-        const icon = iconMap[key];
-        
-        // キーが含まれているかチェック
-        if (html.includes(key)) {
-            // 対応するセクションを探す
-            const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+        // --- td (テーブルセル) の処理 ---
+        tempDiv.querySelectorAll('td').forEach(td => {
+            let html = td.innerHTML;
             
-            if (target) {
-                // クリッカブル版：セクションが存在する場合
-                const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
-                html = html.split(key).join(clickable);
-            } else {
-                // 通常版：セクションが存在しない場合
-                const replacement = `${icon} ${key}`;
-                html = html.split(key).join(replacement);
-            }
-        }
-    });
-    
-    td.innerHTML = html;
-});
+            sortedKeys.forEach(key => {
+                const icon = iconMap[key];
+                
+                // キーが含まれているかチェック
+                if (html.includes(key)) {
+                    // 対応するセクションを探す
+                    const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+                    
+                    if (target) {
+                        // クリッカブル版：セクションが存在する場合
+                        const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
+                        html = html.split(key).join(clickable);
+                    } else {
+                        // 通常版：セクションが存在しない場合
+                        const replacement = `${icon} ${key}`;
+                        html = html.split(key).join(replacement);
+                    }
+                }
+            });
+            
+            td.innerHTML = html;
+        });
 
         const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
         const sanitized = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
@@ -1034,7 +1045,6 @@ tempDiv.querySelectorAll('td').forEach(td => {
     // 初回実行
     updatePreview();
 </script>
-
 <style>
     /* 追加のスタイル */
     #html-display-area {
