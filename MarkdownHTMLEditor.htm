@@ -936,12 +936,12 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     const commonCSS = document.querySelector('style') ? document.querySelector('style').innerHTML : '';
     const iconMap = {
         // 播種・育苗関連
-        '播種': '🌱', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
-        '施薬': '💊', 
+        '播種': '🫘', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
+        '施薬': '💊', '浸種': '💧',
         
         // 田んぼ準備関連
         'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
-        '代かき': '🚜',
+        '代かき': '🟦',
         
         // 田植え・移植関連
         '田植': '🌱', '移植': '🌱',
@@ -960,11 +960,11 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         '中干し': '🌊', '落水': '💧',
         
         // 除草・防除関連
-        '除草': '🚫',
-        '病害虫防除': '🐛',
+        '除草': '☘️',
+        '病害虫': '🐛',
         
         // その他
-        '鳥獣': '🚫', '獣害': '🚫',
+        '鳥獣': '🐦‍⬛', '獣害': '🦌','栽培スケジュール': '📅','詳細情報': '📖',
         '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
     };
 
@@ -1135,6 +1135,8 @@ function getDynamicTitle() {
     return firstHeading ? firstHeading.textContent.trim() : '栽培こよみ';
 }
 
+
+
 // --- 5. コピー・保存（構文エラー回避版） ---
 function execCopyHTML() {
     const content = preview.innerHTML;
@@ -1191,6 +1193,7 @@ function execCopyHTML() {
         alert('コピーに失敗しました');
     });
 }
+
 // プレビューの更新を監視
 input.addEventListener('input', updatePreview);
 
@@ -1255,6 +1258,23 @@ function clearEditor() {
         input.value = '';
         updatePreview();
     }
+}
+
+// 瞬時移動（スクロール）を実行する関数
+function scrollToDetail(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        // behavior: "instant" で瞬時移動、"smooth" で滑らかに移動
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+        // URLのハッシュを更新（任意）
+        history.replaceState(null, null, "#" + id);
+    }
+}
+
+// 戻るボタン用の関数
+function backToTable() {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    history.replaceState(null, null, " ");
 }
 
 </script>
