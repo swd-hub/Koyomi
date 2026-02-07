@@ -997,197 +997,215 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         e.target.value = '';
     };
 
-    // 3. プレビュー更新ロジック
-    function updatePreview() {
-        let markdown = input.value;
-        if (!markdown.trim()) { 
-            preview.innerHTML = ''; 
-            if(htmlDisplayArea) htmlDisplayArea.textContent = '';
-            return; 
-        }
 
-        let html = marked.parse(markdown);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
+// --- 3. プレビュー更新ロジック ---
+function updatePreview() {
+    let markdown = input.value;
+    if (!markdown.trim()) { 
+        preview.innerHTML = ''; 
+        if(htmlDisplayArea) htmlDisplayArea.textContent = '';
+        return; 
+    }
 
-        const sections = [];
+    // --- A. 置換用ボタンHTMLの定義（指示通りのデザインに統一） ---
+    // 除草剤：白背景、角丸8px
+    const herbicideBtn = `<div style="margin-top: 15px; text-align: right;">
+        <a href="javascript:void(0)" onclick="openVirtualTab(herbicideData)" 
+           style="display: inline-block; padding: 10px 20px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold;">
+           🧮 除草剤希釈計算ツール（別タブ）
+        </a>
+    </div>`;
+    
+    // 害虫防除：薄緑背景、角丸12px、フォント16px
+    const insecticideBtn = `<div style="margin-top: 20px; text-align: right;">
+        <a href="javascript:void(0)" onclick="openVirtualTab(insecticideData)" 
+           style="display: inline-block; padding: 10px 20px; background-color: #f1f8f1; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 12px; font-weight: bold; font-size: 16px;">
+           🧮 害虫防除農薬希釈計算（別タブで開く）
+        </a>
+    </div>`;
 
-        // --- h3 (詳細見出し) の処理修正 ---
-        tempDiv.querySelectorAll('h3').forEach(h3 => {
-            const rawTitle = h3.textContent;
-            let displayTitle = rawTitle; // 表示用のタイトル変数を作成
+    // B. Markdownを解析（HTML化）
+    let html = marked.parse(markdown);
 
-            // 詳細見出しにもアイコンを適用
-            sortedKeys.forEach(key => {
-                if (displayTitle.includes(key)) {
-                    const icon = iconMap[key];
-                    displayTitle = displayTitle.split(key).join(`${icon} ${key}`);
-                }
-            });
+    // C. [除草剤ボタン] [害虫防除ボタン] をHTMLに置換
+    // エンジンが作る <p> タグを含めて、正規表現で確実にボタンへ差し替えます
+    html = html.replace(/<p>\s*\[除草剤ボタン\]\s*<\/p>/g, herbicideBtn);
+    html = html.replace(/\[除草剤ボタン\]/g, herbicideBtn);
+    
+    html = html.replace(/<p>\s*\[害虫防除ボタン\]\s*<\/p>/g, insecticideBtn);
+    html = html.replace(/\[害虫防除ボタン\]/g, insecticideBtn);
 
-            const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
-            const id = 'ref_' + Math.random().toString(36).substr(2, 9);
-            const detailBox = document.createElement('div');
-            detailBox.className = 'detail-box';
-            detailBox.id = id;
-            
-            // rawTitleの代わりにアイコン付きの displayTitle を使用
-            h3.innerHTML = `<span>${displayTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
-            h3.style.display = 'flex';
-            h3.style.justifyContent = 'space-between';
-            h3.style.alignItems = 'center';
-            h3.parentNode.insertBefore(detailBox, h3);
-            detailBox.appendChild(h3);
-            let next = detailBox.nextSibling;
-            while (next && next.tagName !== 'H3' && !next.classList?.contains('detail-box')) {
-                let temp = next.nextSibling;
-                detailBox.appendChild(next);
-                next = temp;
-            }
-            sections.push({ key: cleanKey, id: id });
-        });
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
 
-        // --- td (テーブルセル) の処理 ---
-        tempDiv.querySelectorAll('td').forEach(td => {
-            let html = td.innerHTML;
-            
-            sortedKeys.forEach(key => {
+    // --- ブラウザのタイトルを更新 ---
+    const pageTitle = tempDiv.querySelector('h1, h2')?.textContent.trim() || '栽培こよみ';
+    document.title = pageTitle;
+
+    const sections = [];
+
+    // --- h3 (詳細見出し) の処理 ---
+    tempDiv.querySelectorAll('h3').forEach(h3 => {
+        const rawTitle = h3.textContent;
+        let displayTitle = rawTitle;
+
+        sortedKeys.forEach(key => {
+            if (displayTitle.includes(key)) {
                 const icon = iconMap[key];
-                
-                // キーが含まれているかチェック
-                if (html.includes(key)) {
-                    // 対応するセクションを探す
-                    const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
-                    
-                    if (target) {
-                        // クリッカブル版：セクションが存在する場合
-                        const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
-                        html = html.split(key).join(clickable);
-                    } else {
-                        // 通常版：セクションが存在しない場合
-                        const replacement = `${icon} ${key}`;
-                        html = html.split(key).join(replacement);
-                    }
-                }
-            });
-            
-            td.innerHTML = html;
+                displayTitle = displayTitle.split(key).join(`${icon} ${key}`);
+            }
         });
 
-        const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
-        const sanitized = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
-            ADD_ATTR: ['onclick', 'style', 'id', 'class'],
-            ADD_TAGS: ['span', 'div', 'button', 'table', 'tbody', 'thead', 'h3', 'h4'],
-            FORCE_BODY: true
-        });
-
-        preview.innerHTML = sanitized;
-        if (htmlDisplayArea) htmlDisplayArea.textContent = sanitized;
-
-        charCount.textContent = markdown.length;
-        charInfo.textContent = markdown.split('\n').length;
-    }
-
-    // 4. トグル表示
-    let isHtmlMode = false;
-    function toggleDisplayMode(btn) {
-        isHtmlMode = !isHtmlMode;
-        if (isHtmlMode) {
-            preview.style.display = 'none';
-            htmlDisplayArea.style.display = 'block';
-            btn.textContent = '👁️ プレビュー表示に戻す';
-            btn.style.backgroundColor = '#ff9800';
-        } else {
-            preview.style.display = 'block';
-            htmlDisplayArea.style.display = 'none';
-            btn.textContent = '📄 HTML表示に切り替え';
-            btn.style.backgroundColor = ''; 
+        const cleanKey = rawTitle.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
+        const id = 'ref_' + Math.random().toString(36).substr(2, 9);
+        const detailBox = document.createElement('div');
+        detailBox.className = 'detail-box';
+        detailBox.id = id;
+        
+        h3.innerHTML = `<span>${displayTitle}</span><button class="back-button" onclick="backToTable()">← 戻る</button>`;
+        h3.style.display = 'flex';
+        h3.style.justifyContent = 'space-between';
+        h3.style.alignItems = 'center';
+        h3.parentNode.insertBefore(detailBox, h3);
+        detailBox.appendChild(h3);
+        let next = detailBox.nextSibling;
+        while (next && next.tagName !== 'H3' && !next.classList?.contains('detail-box')) {
+            let temp = next.nextSibling;
+            detailBox.appendChild(next);
+            next = temp;
         }
+        sections.push({ key: cleanKey, id: id });
+    });
+
+    // --- td (テーブルセル) の処理 ---
+    tempDiv.querySelectorAll('td').forEach(td => {
+        let cellHtml = td.innerHTML;
+        sortedKeys.forEach(key => {
+            const icon = iconMap[key];
+            if (cellHtml.includes(key)) {
+                const target = sections.find(s => s.key.includes(key) || key.includes(s.key));
+                if (target) {
+                    const clickable = `<span class="stage-box stage-mark clickable-item" onclick="scrollToDetail('${target.id}')">${icon} ${key}</span>`;
+                    cellHtml = cellHtml.split(key).join(clickable);
+                } else {
+                    cellHtml = cellHtml.split(key).join(`${icon} ${key}`);
+                }
+            }
+        });
+        td.innerHTML = cellHtml;
+    });
+
+    const finalHtml = tempDiv.innerHTML.replace(/<table>/g, '<div class="table-wrapper"><table>').replace(/<\/table>/g, '</table></div>');
+    
+    // DOMPurifyの設定
+    const sanitized = DOMPurify.sanitize(`<div class="content-body">${finalHtml}</div>`, {
+        ADD_ATTR: ['onclick', 'style', 'id', 'class', 'target'],
+        ADD_TAGS: ['span', 'div', 'button', 'table', 'tbody', 'thead', 'h3', 'h4', 'a'],
+        FORCE_BODY: true
+    });
+
+    preview.innerHTML = sanitized;
+    if (htmlDisplayArea) htmlDisplayArea.textContent = sanitized;
+
+    charCount.textContent = markdown.length;
+    charInfo.textContent = markdown.split('\n').length;
+}
+
+// --- 4. トグル表示 ---
+let isHtmlMode = false;
+function toggleDisplayMode(btn) {
+    isHtmlMode = !isHtmlMode;
+    if (isHtmlMode) {
+        preview.style.display = 'none';
+        htmlDisplayArea.style.display = 'block';
+        btn.textContent = '👁️ プレビュー表示に戻す';
+        btn.style.backgroundColor = '#ff9800';
+    } else {
+        preview.style.display = 'block';
+        htmlDisplayArea.style.display = 'none';
+        btn.textContent = '📄 HTML表示に切り替え';
+        btn.style.backgroundColor = ''; 
     }
+}
 
 // 補助関数：プレビュー内容からタイトルを動的に取得する
-    function getDynamicTitle() {
-        // プレビュー内の一番最初の見出しテキストを取得、なければデフォルト
-        const firstHeading = preview.querySelector('h1, h2, h3');
-        return firstHeading ? firstHeading.textContent.trim() : '栽培こよみ';
-    }
+function getDynamicTitle() {
+    const firstHeading = preview.querySelector('h1, h2, h3');
+    return firstHeading ? firstHeading.textContent.trim() : '栽培こよみ';
+}
 
-    // 5. コピー・保存・テンプレート
-    function execCopyHTML() {
-        const content = isHtmlMode ? htmlDisplayArea.textContent : preview.innerHTML;
-        const pageTitle = getDynamicTitle();
-        
-        // 全体のHTML構造を組み立て
-        const fullHTML = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${pageTitle}</title>
-</head>
-<body>
-    <div class="container">
-${content}
-    </div>
-`;
+// --- 5. コピー・保存（構文エラー回避版） ---
+function execCopyHTML() {
+    const content = preview.innerHTML;
+    const pageTitle = getDynamicTitle();
+    
+    // 書き出し後のHTMLに持たせる動作スクリプト（文字列として定義）
+    const injectedScript = 
+        '<script>\n' +
+        '    function openVirtualTab(data) {\n' +
+        '        var newWin = window.open("", "_blank");\n' +
+        '        if (newWin) {\n' +
+        '            newWin.document.write(data);\n' +
+        '            newWin.document.close();\n' +
+        '        } else {\n' +
+        '            alert("ポップアップがブロックされました。許可してください。");\n' +
+        '        }\n' +
+        '    }\n' +
+        '    function scrollToDetail(id) {\n' +
+        '        var el = document.getElementById(id);\n' +
+        '        if (el) {\n' +
+        '            el.scrollIntoView({ behavior: "instant" });\n' +
+        '            location.hash = id;\n' +
+        '        }\n' +
+        '    }\n' +
+        '    function backToTable() {\n' +
+        '        window.scrollTo(0, 0);\n' +
+        '        if (history.replaceState) {\n' +
+        '            history.replaceState(null, null, window.location.pathname);\n' +
+        '        }\n' +
+        '    }\n' +
+        '</' + 'script>';
 
-        navigator.clipboard.writeText(fullHTML).then(() => alert('✅ 完全なHTMLをコピーしました！'));
-    }
+// 全体の構造を組み立て（ヘッダーとスクリプト、メインコンテンツのみを連結）
+    const fullHTML = 
+        '<!DOCTYPE html>\n' +
+        '<html lang="ja">\n' +
+        '<head>\n' +
+        '    <meta charset="UTF-8">\n' +
+        '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+        '    <title>' + pageTitle + '</title>\n' +
+        '    ' + injectedScript + '\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <div class="container">\n' +
+        '        ' + content + '\n' +
+        '    </div>\n'; 
+        // 閉じタグは content 側に含まれる、または後続処理で付与されるためここで終了
 
-    function downloadHTML() {
-        const content = preview.innerHTML;
-        const pageTitle = getDynamicTitle();
-        
-        const finalFile = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${pageTitle}</title>
-    <style>${commonCSS}</style>
-</head>
-<body>
-    <div class="container">
-${content}
-    </div>
-    <script>
-        function scrollToDetail(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
-        function backToTable(){window.scrollTo({top:0,behavior:'smooth'});}
-    <\/script>
-</body>
-</html>`;
+    // クリップボードへコピー
+    navigator.clipboard.writeText(fullHTML).then(function() {
+        alert('✅ 完全に動作するHTMLをコピーしました！');
+    }).catch(function(err) {
+        console.error('Copy failed', err);
+        alert('コピーに失敗しました');
+    });
+}
+// プレビューの更新を監視
+input.addEventListener('input', updatePreview);
 
-        const blob = new Blob([finalFile], { type: 'text/html; charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); 
-        a.download = `${pageTitle}.html`; // ファイル名も動的に
-        a.click();
-    }
+// テンプレート挿入用関数（修正版）
+function insertTemplate() {
+    input.value = `# 令和８年産 栽培こよみ\n\n[除草剤ボタン]\n\n## 栽培管理表\n\n[害虫防除ボタン]\n\n...`;
+    updatePreview();
+}
 
-    function insertTemplate() {
-        input.value = `## 📊 飼料用トウモロコシ栽培こよみ\n\n| 月 | 旬 | 生育ステージ | 主な作業 |\n|:---:|:---:|:---:|:---|\n| 4月 | 上旬 | 播種 | ほ場準備 |\n\n---\n\n### ほ場準備\n- 丁寧に耕起する\n\n### 播種\n- 適温でまく`;
+function clearEditor() {
+    if(confirm('入力をすべて消去しますか？')) {
+        input.value = '';
         updatePreview();
     }
+}
 
-    function clearEditor() { if (confirm("すべて消去しますか？")) { input.value = ""; updatePreview(); } }
-
-    // ナビゲーション（エディタ上のプレビュー動作確認用）
-    window.scrollToDetail = (id) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-            el.classList.add('highlight-flash');
-            setTimeout(() => el.classList.remove('highlight-flash'), 2000);
-        }
-    };
-    window.backToTable = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    input.addEventListener('input', updatePreview);
-    
-    // 初回実行
-    updatePreview();
-    
 </script>
-
 </body>
 </html>
