@@ -941,6 +941,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         
         // 田んぼ準備関連
         'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
+        '代かき': '🚜',
         
         // 田植え・移植関連
         '田植': '🌱', '移植': '🌱',
@@ -960,7 +961,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
         
         // 除草・防除関連
         '除草': '🚫',
-        '害虫': '🐛', '防除': '🐛',
+        '病害虫防除': '🐛',
         
         // その他
         '鳥獣': '🚫', '獣害': '🚫',
@@ -1016,24 +1017,24 @@ function updatePreview() {
         </a>
     </div>`;
     
-    // 害虫防除：薄緑背景、角丸12px、フォント16px
+    // 病害虫防除：薄緑背景、角丸12px、フォント16px
     const insecticideBtn = `<div style="margin-top: 20px; text-align: right;">
         <a href="javascript:void(0)" onclick="openVirtualTab(insecticideData)" 
            style="display: inline-block; padding: 10px 20px; background-color: #f1f8f1; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 12px; font-weight: bold; font-size: 16px;">
-           🧮 害虫防除農薬希釈計算（別タブで開く）
+           🧮 病害虫防除農薬希釈計算（別タブ）
         </a>
     </div>`;
 
     // B. Markdownを解析（HTML化）
     let html = marked.parse(markdown);
 
-    // C. [除草剤ボタン] [害虫防除ボタン] をHTMLに置換
+    // C. [除草剤ボタン] [病害虫防除ボタン] をHTMLに置換
     // エンジンが作る <p> タグを含めて、正規表現で確実にボタンへ差し替えます
     html = html.replace(/<p>\s*\[除草剤ボタン\]\s*<\/p>/g, herbicideBtn);
     html = html.replace(/\[除草剤ボタン\]/g, herbicideBtn);
     
-    html = html.replace(/<p>\s*\[害虫防除ボタン\]\s*<\/p>/g, insecticideBtn);
-    html = html.replace(/\[害虫防除ボタン\]/g, insecticideBtn);
+    html = html.replace(/<p>\s*\[病害虫防除ボタン\]\s*<\/p>/g, insecticideBtn);
+    html = html.replace(/\[病害虫防除ボタン\]/g, insecticideBtn);
 
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
@@ -1193,9 +1194,59 @@ function execCopyHTML() {
 // プレビューの更新を監視
 input.addEventListener('input', updatePreview);
 
-// テンプレート挿入用関数（修正版）
 function insertTemplate() {
-    input.value = `# 令和８年産 栽培こよみ\n\n[除草剤ボタン]\n\n## 栽培管理表\n\n[害虫防除ボタン]\n\n...`;
+    input.value = `# 令和８年産 飼料用トウモロコシ栽培こよみ
+**WCS（ホールクロップサイレージ）用** 最終更新: 2026年1月26日
+
+---
+
+## 栽培スケジュール（4月〜8月）
+
+| 月 | 旬 | 生育ステージ | 主な作業 |
+| :--- | :---: | :---: | :--- |
+| **時期（左寄）** | **項目（中央）** | **状態（中央）** | **具体的な作業内容（幅広・左寄）** |
+| **4月** | 上旬 | 播種 | ほ場準備 / 基肥 / 鳥獣対策 / **病害虫防除** / 播種 / 除草剤散布 |
+| **6月** | 中旬 | — | **病害虫防除**（アワノメイガ等） |
+
+---
+
+## 詳細情報
+
+### 1. 外部リファレンス（リンクの見本）
+- [飼料用トウモロコシ 栽培マニュアル (農研機構)](https://www.naro.go.jp/publicity_report/publication/pamphlet/tech-pamph/013098.html)
+- [除草剤・防除薬剤の適合表](https://www.google.com/)
+
+### 2. 播種・施肥の重要ポイント（インラインコードの見本）
+- 播種深さは \`3cm\` を目安とし、浮き苗を防止する。
+- 基肥として \`高度化成14-14-14\` を10aあたり \`80kg\` 散布。
+- 雑草対策には \`土壌処理剤\` を播種後直ちに散布すること。
+
+### 3. 病害虫の判別（画像挿入の見本）
+![アワノメイガの被害例](https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Ostrinia_nubilalis_3051410.jpg/320px-Ostrinia_nubilalis_3051410.jpg)
+
+### 4. 鳥獣対策・病害虫防除（チェックリスト）
+- [x] 播種直後のカラス対策（防鳥網・忌避剤）
+- [ ] 電気柵の設置と通電確認
+- [ ] **病害虫の早期発見（アワノメイガ・すす紋病等）**
+
+---
+
+## MD操作ガイド（不要になったら消してください）
+- **太字**: \*\*強調\*\* / **打ち消し**: \~\~済\~\~
+- **リスト**: \`-\`(箇条書き) / \`1.\`(手順書)
+- **チェック**: \`- [ ]\`(未) / \`- [x]\`(済)
+- **リンク**: \`[名前](URL)\`
+- **インラインコード**: \`文字\` (数値を際立たせる)
+- **画像**: \`![代替文字](URL)\`
+- **引用**: \`>\` (指導内容など)
+- **テーブル寄せ**: \`:---\`(左) / \`:---:\`(中) / \`---:\`(右)
+- **隠しメモ**: \`\`: 画面には映らない自分用メモ（推奨）
+
+---
+
+## 栽培記録・備忘録
+- 2026/04/05: 播種完了。`;
+
     updatePreview();
 }
 
