@@ -3,560 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>飼料用トウモロコシ栽培こよみ</title>
+    <title>令和８年産　WCS用イネ「たちあやか」（５月下旬田植）栽培こよみ</title>
 </head>
 <body>
     <div class="container">
-        <h1>🌾 飼料用トウモロコシ栽培こよみ</h1>
-        <div class="subtitle">WCS（ホールクロップサイレージ）用</div>
-        <div class="date-info">最終更新: 2026年1月26日</div>
-
-        <!-- 生育ステージ表 -->
-<div class="table-content" id="tableContent">
-    <h2 id="stageTableTitle">📊 栽培スケジュール（4月〜8月）</h2>
-    
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 15%;">月</th>
-                    <th style="width: 15%;">旬</th>
-                    <th style="width: 30%;">生育ステージ</th>
-                    <th style="width: 40%;">主な作業</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td rowspan="3" style="background: #e8f5e9; font-weight: bold;">4月</td>
-                    <td>上旬</td>
-                    <td class="stage-content"><span class="stage-item stage-1" onclick="scrollToDetail('seedingDetail')">播種</span></td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('preparationDetail')"><div class="work-icon-symbol">🌱</div>ほ場準備</div>
-                        <div class="work-icon" onclick="scrollToDetail('fertilizerDetail')"><div class="work-icon-symbol">🧪</div>基肥</div>
-                        <div class="work-icon" onclick="scrollToDetail('birdControlDetail')"><div class="work-icon-symbol">🚫</div>鳥獣対策</div>
-                        <div class="work-icon" onclick="scrollToDetail('pestControlDetail')"><div class="work-icon-symbol">🐛</div>害虫防除</div>
-                        <div class="work-icon" onclick="scrollToDetail('seedingDetail')"><div class="work-icon-symbol">🌾</div>播種</div>
-                        <div class="work-icon" onclick="scrollToDetail('herbicideDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>中旬</td>
-                    <td class="stage-content"><span class="stage-item stage-2">発芽</span></td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('wildlifeControlDetail')"><div class="work-icon-symbol">🚫</div>獣害対策</div>
-                        <div class="work-icon" onclick="scrollToDetail('herbicideAfterDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>下旬</td>
-                    <td class="stage-content"><span class="stage-item stage-3" onclick="scrollToDetail('leafCountingDetail')">3～5葉期</span></td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('herbicideAfterDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td rowspan="3" style="background: #f1f8e9; font-weight: bold;">5月</td>
-                    <td>上旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">ー</td>
-                </tr>
-                <tr>
-                    <td>中旬</td>
-                    <td class="stage-content"><span class="stage-item stage-3" onclick="scrollToDetail('leafCountingDetail')">5～7葉期</span></td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('herbicideAfterDetail')"><div class="work-icon-symbol">💧</div>除草剤散布</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>下旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">ー</td>
-                </tr>
-                <tr>
-                    <td rowspan="3" style="background: #e8f5e9; font-weight: bold;">6月</td>
-                    <td>上旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('topDressingDetail')"><div class="work-icon-symbol">🧪</div>追肥</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>中旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">
-                    <div class="work-icon" onclick="scrollToDetail('pestControlOccurrenceDetail')"><div class="work-icon-symbol">🐛</div>害虫防除</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>下旬</td>
-                    <td class="stage-content"><span class="stage-item stage-4">絹糸抽出期</span></td>
-                    <td class="work-content">
-                    </td>
-                </tr>
-                <tr>
-                    <td rowspan="3" style="background: #f1f8e9; font-weight: bold;">7月</td>
-                    <td>上旬</td>
-                    <td class="stage-content">
-                        <div class="split-cell">
-                            <span class="split-item stage-7" onclick="scrollToDetail('maturityDetail')">雌穂の登熟</span>
-                        </div>
-                    </td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('lodgingDetail')"><div class="work-icon-symbol">⚠️</div>倒伏注意</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>中旬</td>
-                    <td class="stage-content"><span class="stage-item stage-6">水熟期</span></td>
-                    <td class="work-content">ー</td>
-                </tr>
-                <tr>
-                    <td>下旬</td>
-                    <td class="stage-content">
-                        <div class="split-cell">
-                            <span class="split-item stage-8" onclick="scrollToDetail('maturityDetail')">乳熟期</span>
-                            <span class="split-item stage-9" onclick="scrollToDetail('maturityDetail')">糊熟期</span>
-                        </div>
-                    </td>
-                    <td class="work-content">ー</td>
-                </tr>
-                <tr>
-                    <td rowspan="3" style="background: #e8f5e9; font-weight: bold;">8月</td>
-                    <td>上旬</td>
-                    <td class="stage-content">
-                        <div class="split-cell">
-                            <span class="split-item stage-10" onclick="scrollToDetail('maturityDetail')">黄熟期</span>
-                            <span class="split-item stage-11" onclick="scrollToDetail('maturityDetail')">完熟期</span>
-                        </div>
-                    </td>
-                    <td class="work-content">
-                        <div class="work-icon" onclick="scrollToDetail('harvestDetail')"><div class="work-icon-symbol">✂️</div>収穫作業</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>中旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">ー</td>
-                </tr>
-                <tr>
-                    <td>下旬</td>
-                    <td class="stage-content">ー</td>
-                    <td class="work-content">ー</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="detail-section">
-    <h2>📋 詳細情報</h2>
-    
-    <div class="detail-box" id="preparationDetail">
-        <h4>
-            <span>🌱 ほ場準備</span>
-            <button class="back-button" onclick="backToTable()">← 戻る</button>
-        </h4>
-        
-        <p>完熟した牛糞堆肥 10アールあたり3～5トン</p>
-        <p>耕起し除草の土壌処理のための整地</p>
-        <p>明渠とサブソイラー施工で十分な砕土と落水口への排水促進</p>
-    </div>
-
-    <div class="detail-box" id="fertilizerDetail">
-        <h4>
-            <span>🧪 基肥</span>
-            <button class="back-button" onclick="backToTable()">← 戻る</button>
-        </h4>
-        <strong>10アールあたり施肥設計　例</strong>
-        
-        <table class="detail-table">
-    <thead>
-        <tr>
-            <th>肥料名</th>
-            <th>投入量</th>
-        </tr>
-        <tr>
-            <td>堆肥</td>
-            <td>高度化成14-14-14</td>
-        </tr>
-        <tr>
-            <td>3トン</td>
-            <td>80kg</td>
-        </tr>
-        <tr>
-            <td>5トン</td>
-            <td>70kg</td>
-        </thead>
-    </tbody>
-</table>
-
-        
-        <p>基肥の均一散布もしくは側条施肥</p>
-    </div>
-
-            <!-- 鳥獣対策 詳細ボックス -->
-            <div class="detail-box" id="birdControlDetail">
-                <h4>
-                    <span>🚫 鳥獣対策</span>
-                    <button class="back-button" onclick="backToTable()">← 戻る</button>
-                </h4>
-                
-                        <strong>種子への鳥忌避剤の処理</strong>
-                        <table class="detail-table">
-                            <thead>
-                                <tr>
-                                    <th>名称</th>
-                                    <th>使用量</th>
-                                    <th>使用回数</th>
-                                    <th>使用方法</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>キヒゲン</td>
-                                    <td>乾燥種子重量の1％</td>
-                                    <td>1回</td>
-                                    <td>種子粉衣</td>
-                                </tr>
-                            </tbody>
-                        </table>
-            </div>
-
-            <!-- 播種 詳細ボックス -->
-<div class="detail-box" id="seedingDetail">
-    <h4>
-        <span>🌾 播種</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>播種は日平均気温10度以上</p>
-    <p>播種量 10アール6,000～6,500粒</p>
-    <p>真空播種機を利用</p>
-    <p>条播のち覆土時に鎮圧</p>
-    
-    <p><strong>播種間隔</strong></p>
-    
-    <table class="detail-table">
-        <thead>
-            <tr>
-                <th>項目</th>
-                <th>値</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>条間</td>
-                <td>70cm</td>
-            </tr>
-            <tr>
-                <td>株間</td>
-                <td>19cm</td>
-            </tr>
-            <tr>
-                <td>覆土</td>
-                <td>2～3cm</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="detail-box" id="herbicideDetail">
-    <h4>
-        <span>💧 除草剤散布</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>土壌処理による除草抑制</p>
-    <p><strong>除草剤</strong></p>
-    <table class="detail-table">
-        <thead>
-            <tr>
-                <th>除草剤名</th>
-                <th>使用時期</th>
-                <th>薬量（10aあたり）</th>
-                <th>希釈水量（10aあたり）</th>
-                <th>使用回数</th>
-                <th>散布方法</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>ラウンドアップマックスロード</td>
-                <td>飼料用トウモロコシ出芽前まで（雑草生育期）</td>
-                <td>200～500ミリリットル</td>
-                <td>通常散布 50～100リットル<br>少量散布 5～50リットル</td>
-                <td>2回以内</td>
-                <td>雑草茎葉散布</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div style="margin-top: 15px; text-align: right;"> <a href="javascript:void(0)" 
-           onclick="openVirtualTab(herbicideData)" 
-           style="display: inline-block; padding: 10px 20px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold;">
-            🧮 除草剤希釈計算ツール（別タブ）
-        </a>
-    </div>
-</div>
-
-<div class="detail-box" id="pestControlDetail">
-    <h4>
-        <span>🐛 害虫防除</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    <p><strong>ツマジロクサヨトウ、ネキリムシ類防除の薬剤を種子に塗抹処理</strong></p>
-    <table class="detail-table">
-        <thead>
-            <tr>
-                <th>名称</th>
-                <th>使用時期</th>
-                <th>薬量（10aあたり）</th>
-                <th>使用回数</th>
-                <th>使用方法</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>ルミビアFS</td>
-                <td>播種前</td>
-                <td>乾燥種子1000粒当たり原液1.5～2.5mL</td>
-                <td>1回</td>
-                <td>塗抹処理</td>
-            </tr>
-        </tbody>
-    </table>
-    
-    <p><strong>ネキリムシ防除の薬剤を散布</strong></p>
-    <table class="detail-table">
-        <thead>
-            <tr>
-                <th>名称</th>
-                <th>使用時期</th>
-                <th>薬量（10aあたり）</th>
-                <th>使用回数</th>
-                <th>使用方法</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>ガーベイトA</td>
-                <td>生育初期、但し、収穫4日前まで</td>
-                <td>3kg</td>
-                <td>4回以内</td>
-                <td>株元散布</td>
-            </tr>
-        </tbody>
-    </table>
-    <p>播種10日～2週後に発芽の状況確認</p>
-</div>
-
-<div class="detail-box" id="wildlifeControlDetail">
-    <h4>
-        <span>🚫 獣害対策</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>警戒地域では獣害対策を早めにする（鹿では播種直後に）</p>
-    <p>電気牧柵等を設置する</p>
-</div>
-
-<div class="detail-box" id="leafCountingDetail">
-    <h4>
-        <span>🍃 葉期の数え方</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p><strong>葉身と葉鞘の間の境界線（リーフカラー）を数える</strong></p>
-    <p>3～5葉期：葉身と葉鞘の境界線が3～5本見える状態</p>
-    <p>5～7葉期：葉身と葉鞘の境界線が5～7本見える状態</p>
-</div>
-
-            <!-- 除草剤散布（発芽後）詳細ボックス -->
-<div class="detail-box" id="herbicideAfterDetail">
-                <h4>
-                    <span>💧 除草剤散布（発芽後）</span>
-                    <button class="back-button" onclick="backToTable()">← 戻る</button>
-                </h4>
-                
-                    <p>全面散布</p>
-                        <strong>農薬を使用する前には必ずラベル表示を確認しましょう！</strong>
-                        <table class="detail-table">
-                            <thead>
-                                <tr>
-                                    <th>除草剤名</th>
-                                    <th>特長</th>
-                                    <th>使用時期</th>
-                                    <th>薬量（10ａあたり）</th>
-                                    <th>希釈水量（10ａあたり）</th>
-                                    <th>使用回数</th>
-                                    <th>散布方法</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>ラウンドアップマックスロード</strong></td>
-                                    <td>一年生雑草及び多年生雑草</td>
-                                    <td>飼料用とうもろこし出芽前まで（雑草生育期）</td>
-                                    <td>200～500ミリリットル</td>
-                                    <td>通常散布：50～100リットル<br>少量散布：5～50リットル</td>
-                                    <td>2回以内</td>
-                                    <td>雑草茎葉散布</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>エコトップP乳剤</strong>（土壌処理）</td>
-                                    <td>一年生雑草</td>
-                                    <td>は種後出芽前（雑草発生前）</td>
-                                    <td>400～600ミリリットル</td>
-                                    <td>100リットル</td>
-                                    <td>1回</td>
-                                    <td>全面土壌散布</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>ゲザノンゴールド</strong>（茎葉処理）</td>
-                                    <td>一年生雑草</td>
-                                    <td>とうもろこし2～4葉期</td>
-                                    <td>140～260ミリリットル</td>
-                                    <td>70～100リットル</td>
-                                    <td>1回</td>
-                                    <td>全面土壌散布</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>アルファード液剤</strong></td>
-                                    <td>一年生雑草</td>
-                                    <td>とうもろこし3～7葉期、但し、収穫45日前まで</td>
-                                    <td>100～150ミリリットル</td>
-                                    <td>100～150リットル</td>
-                                    <td>1回</td>
-                                    <td>雑草茎葉散布 又は 全面散布</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-                <h3>残草処理を要する場合</h3>
-
-                        <table class="detail-table">
-                            <thead>
-                                <tr>
-                                    <th>除草剤名</th>
-                                    <th>特長</th>
-                                    <th>使用時期</th>
-                                    <th>薬量（10ａあたり）</th>
-                                    <th>希釈水量（10ａあたり）</th>
-                                    <th>使用回数</th>
-                                    <th>散布方法</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>ワンホープ乳剤</strong></td>
-                                    <td>一年生雑草、多年生イネ科雑草</td>
-                                    <td>とうもろこし3～5葉期、但し、収穫30日前まで</td>
-                                    <td>100～150ミリリットル</td>
-                                    <td>70～100リットル</td>
-                                    <td>1回</td>
-                                    <td>雑草茎葉散布 又は 全面散布</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>バスタ液剤</strong></td>
-                                    <td>一年生雑草</td>
-                                    <td>収穫7日前まで（雑草生育期：は種前又は畦間処理）</td>
-                                    <td>300～500ミリリットル</td>
-                                    <td>100～150リットル</td>
-                                    <td>3回以内</td>
-                                    <td>雑草茎葉散布</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                
-    <div style="margin-top: 15px; text-align: right;"> <a href="javascript:void(0)" 
-           onclick="openVirtualTab(herbicideData)" 
-           style="display: inline-block; padding: 10px 20px; background-color: #fff; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 8px; font-weight: bold;">
-            🧮 除草剤希釈計算ツール（別タブ）
-        </a>
-    </div>
-</div>
-				
-            <!-- 追肥 詳細ボックス -->
-            </div> 
-<div class="detail-box" id="topDressingDetail">
-    <h4>
-        <span>🧪 追肥</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>10アールあたり窒素5kg</p>
-</div>
-
-            <!-- 害虫防除（発生時）詳細ボックス -->
-            <div class="detail-box" id="pestControlOccurrenceDetail">
-                <h4>
-                    <span>🐛 害虫防除（発生時）</span>
-                    <button class="back-button" onclick="backToTable()">← 戻る</button>
-                </h4>
-<p>アワノメイガは甚大な被害以外は防除不要</p>
-<p>アワヨトウの大発生では栽培中止</p>
-<p><strong>⚠️ 農薬を使用する前には必ずラベル表示を確認しましょう！</strong></p>
-
-<table class="detail-table">
-    <thead>
-        <tr>
-            <th>農薬の種類</th>
-            <th>適用害虫</th>
-            <th>使用時期</th>
-            <th>使用液量（10a当たり）</th>
-            <th>希釈倍数</th>
-            <th>使用回数</th>
-            <th>使用方法</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td rowspan="4"><strong>パダンSG水溶剤</strong></td>
-            <td>アワノメイガ</td>
-            <td rowspan="4">収穫21日前まで</td>
-            <td>100～300リットル</td>
-            <td>1000～1500倍</td>
-            <td rowspan="4">2回以内</td>
-            <td>散布</td>
-        </tr>
-        <tr>
-            <td>アワノメイガ</td>
-            <td>0.8～1.6リットル</td>
-            <td>8倍</td>
-            <td>無人航空機による散布</td>
-        </tr>
-        <tr>
-            <td>アワノメイガ</td>
-            <td>1.6リットル</td>
-            <td>16倍</td>
-            <td>無人航空機による散布</td>
-        </tr>
-        <tr>
-            <td>アワヨトウ</td>
-            <td>100～300リットル</td>
-            <td>1000～1500倍</td>
-            <td>散布</td>
-        </tr>
-        <tr>
-            <td><strong>パダンSG水溶剤</strong></td>
-            <td>ツマジロクサヨトウ</td>
-            <td>収穫21日前まで</td>
-            <td>100～300リットル</td>
-            <td>1000～1500倍</td>
-            <td>2回以内</td>
-            <td>散布</td>
-        </tr>
-        <tr>
-            <td><strong>トアロー水和剤CT</strong></td>
-            <td>アワノメイガ</td>
-            <td>発生初期但し収穫前日まで</td>
-            <td>100～300リットル</td>
-            <td>1000倍</td>
-            <td>—</td>
-            <td>散布</td>
-        </tr>
-    </tbody>
-</table>
+<div class="content-body"><h1>令和８年産　WCS用イネ「たちあやか」（５月下旬田植）栽培こよみ</h1>
+<p><strong>WCS（ホールクロップサイレージ）用</strong> 最終更新: 2026年02月04日</p>
+<hr>
+<h2>栽培スケジュール（4月〜9月）</h2>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th align="center">月</th>
+<th align="center">旬</th>
+<th align="left">生育ステージ</th>
+<th align="left">主な作業</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>4月</strong></td>
+<td align="center">上旬</td>
+<td align="left"></td>
+<td align="left"><span onclick="scrollToDetail('ref_pm4ub8h7k')" class="stage-box stage-mark clickable-item">🌱 土づくり</span></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"><strong>5月</strong></td>
+<td align="center">上旬</td>
+<td align="left"><span onclick="scrollToDetail('ref_xfx8iyfv4')" class="stage-box stage-mark clickable-item">🌱 播種</span>期</td>
+<td align="left"><span onclick="scrollToDetail('ref_xfx8iyfv4')" class="stage-box stage-mark clickable-item">🌱 播種</span>/ <span onclick="scrollToDetail('ref_xfx8iyfv4')" class="stage-box stage-mark clickable-item">🌱 育苗</span>/</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left"></td>
+<td align="left"><span onclick="scrollToDetail('ref_2vciw6rvn')" class="stage-box stage-mark clickable-item">🧪 基肥</span>/<span onclick="scrollToDetail('ref_xfx8iyfv4')" class="stage-box stage-mark clickable-item">🌱 育苗</span>箱<span onclick="scrollToDetail('ref_9v9bbdunh')" class="stage-box stage-mark clickable-item">💊 施薬</span>/</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left"><span onclick="scrollToDetail('ref_2zm7vrprg')" class="stage-box stage-mark clickable-item">🌱 田植</span>期 / 🌱 活着期</td>
+<td align="left"><span onclick="scrollToDetail('ref_2zm7vrprg')" class="stage-box stage-mark clickable-item">🌱 田植</span></td>
+</tr>
+<tr>
+<td align="center"><strong>6月</strong></td>
+<td align="center">上旬</td>
+<td align="left"></td>
+<td align="left"><span onclick="scrollToDetail('ref_aleaua8ha')" class="stage-box stage-mark clickable-item">🧪 追肥</span></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left"></td>
+<td align="left"><span onclick="scrollToDetail('ref_hh3t1ilup')" class="stage-box stage-mark clickable-item">🐛 害虫</span><span onclick="scrollToDetail('ref_cs2a9u6gd')" class="stage-box stage-mark clickable-item">🐛 防除</span></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"><strong>7月</strong></td>
+<td align="center">上旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left">🌿 最高🌿 分げつ期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"><strong>8月</strong></td>
+<td align="center">上旬</td>
+<td align="left">🌾 出穂期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left">🥛 乳熟期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left">🥛 糊熟期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"><strong>9月</strong></td>
+<td align="center">上旬</td>
+<td align="left">🟡 黄熟期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">中旬</td>
+<td align="left">🌾 成熟期</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center">下旬</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2>詳細情報</h2>
+<div id="ref_pm4ub8h7k" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🌱 土づくり</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>堆肥による土づくりを徹底する</li>
+</ul>
+<hr>
+</div><div id="ref_xfx8iyfv4" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🌱 播種-🌱 育苗</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>育苗期間の温度管理、かん水に注意</li>
+<li>播種量は乾籾箱当たり一五○ｇ程度</li>
+<li>浸種時間は積算温度六○～八○℃を目安</li>
+</ul>
+<hr>
+</div><div id="ref_2vciw6rvn" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🧪 基肥</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>施肥量は窒素4㎏程度</li>
+</ul>
+<hr>
+</div><div id="ref_9v9bbdunh" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🌱 育苗箱💊 施薬</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>パダン粒剤4、ビルダーリディア箱粒剤を施用</li>
+</ul>
+<hr>
+</div><div id="ref_2zm7vrprg" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🌱 田植</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>植付株数五○株／坪（株間二一㎝、条間三○㎝）</li>
+<li>一株植付本数　四～五本</li>
+<li>植付時期　五月下旬～六月上旬頃</li>
+</ul>
+<hr>
+</div><div id="ref_0ctphihdl" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🚫 除草剤散布</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>低コスト剤、高機能除草剤を選択する</li>
+<li>使用できる薬剤が限られるので注意</li>
+<li>初中期一発剤を適期に散布</li>
+</ul>
+<hr>
+</div><div id="ref_cs2a9u6gd" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>雑草の徹底🐛 防除（特にヒエ、クサネム）</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>散布時期（収穫前日数等）に注意</li>
+<li>広葉等が残った場合は、バサグラン剤等</li>
+<li>ヒエが残った場合は、クリンチャー剤等</li>
+</ul>
+<hr>
+</div><div id="ref_4jzpi6wrh" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🌊 中干し</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>中干しの目安は七～一○日程度</li>
+<li>中干し前に溝切りを行う。</li>
+</ul>
+<hr>
+</div><div id="ref_aleaua8ha" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🧪 追肥</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>落水時期は天候により出穂前一○～一五日前後</li>
+</ul>
+<hr>
+</div><div id="ref_hh3t1ilup" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>🐛 害虫🐛 防除</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<ul>
+<li>ニカメイチュウ等の害虫の発生に注意</li>
+</ul>
 <div style="margin-top: 20px; text-align: right;"> <a href="javascript:void(0)" 
            onclick="openVirtualTab(insecticideData)" 
            style="display: inline-block; padding: 10px 20px; background-color: #f1f8f1; color: #2e7d32; text-decoration: none; border: 2px solid #2e7d32; border-radius: 12px; font-weight: bold; font-size: 16px;">
@@ -564,75 +196,23 @@
         </a>
     </div>
 
-    <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start;"> <a href="https://www.pref.shimane.lg.jp/industry/norin/gijutsu/nougyo_tech/byougaityuu/byougaityuu-index/kon/sc113.data/ya113.gif" 
-           target="_blank" rel="noopener noreferrer" 
-           style="display: inline-block; padding: 10px 15px; background-color: #ffffff; color: #0056b3; text-decoration: none; border: 2px solid #0056b3; border-radius: 12px; font-weight: bold; font-size: 14px;">
-            🔗 アワヨトウ・アワノメイガ
-        </a>
-
-        <a href="https://www.pref.saitama.lg.jp/images/158277/tsumasyu1.jpg" 
-           target="_blank" rel="noopener noreferrer" 
-           style="display: inline-block; padding: 10px 15px; background-color: #ffffff; color: #d32f2f; text-decoration: none; border: 2px solid #d32f2f; border-radius: 12px; font-weight: bold; font-size: 14px;">
-            🦟 ツマジロクサヨトウ
-        </a>
+<hr>
+</div><div id="ref_pfuu8iwip" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>💧 落水</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<h4>期収穫に向けた適正な水管理（落水）</h4>
+<ul>
+<li>朝夕の露ある時間帯の収穫は避ける</li>
+<li>収穫適期は出穂後一○～二○日（乳熟～糊熟期）</li>
+</ul>
+<hr>
+</div><div id="ref_mgigpzzn3" class="detail-box"><h3 style="display: flex; justify-content: space-between; align-items: center;"><span>✂️ 収穫</span><button onclick="backToTable()" class="back-button">← 戻る</button></h3>
+<h4>適期収穫に心がける</h4>
+<ul>
+<li>収穫時の水分含量70％以下の確認</li>
+</ul>
+</div></div>
     </div>
-</div>
-            <!-- 倒伏被害 詳細ボックス -->
-<div class="detail-box" id="lodgingDetail">
-    <h4>
-        <span>⚠️ 倒伏被害</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>絹糸抽出日の30日～45日後に収穫</p>
-    <p>雌穂の登熟（膨らむ）前の倒伏では茎の途中から起き出して収穫可能</p>
-    <p>登熟の進行中では倒伏が進み、雌穂が地面に着くと土壌混入するので収穫不可</p>
-</div>
-            <!-- 熟期 詳細ボックス -->
-<div class="detail-box" id="maturityDetail">
-    <h4>
-        <span>🌾 熟期</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <table class="detail-table"> <thead>
-            <tr>
-                <th>熟期</th>
-                <th>目安</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>絹糸抽出期</strong></td>
-                <td>ほ場の約半分の株で絹糸が現れた日</td>
-            </tr>
-            <tr>
-                <td><strong>糊熟期</strong></td>
-                <td>子実をつぶすと粘りのある糊状の液が出る時期</td>
-            </tr>
-            <tr>
-                <td><strong>黄熟期（収穫適期）</strong></td>
-                <td>雌穂の上位３分の１部分を折って先端側の切断面をみて、黄色(デンプン)と白色(乳汁)の割合が１／２になるミルクラインを形成した時</td>
-            </tr>
-            <tr>
-                <td><strong>完熟期</strong></td>
-                <td>子実、雌穂の軸、茎が硬くなり、WCS飼料には向かない</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
 
 
-
-<div class="detail-box" id="harvestDetail">
-    <h4>
-        <span>✂️ 収穫</span>
-        <button class="back-button" onclick="backToTable()">← 戻る</button>
-    </h4>
-    
-    <p>収穫期は水分70％程度になる黄熟期ごろ</p>
-    <p>地面から15cmの高さで刈り、1.9cmに微細断してラップは基本6重巻き、長期保存8重巻き</p>
-</div> 
     <style>
         * {
             box-sizing: border-box;
@@ -896,6 +476,20 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
             transform: scale(1.05);
         }
 /* アイコン内の記号/絵文字のサイズ固定 */
+/* ホバー時のスタイル設定 */
+.clickable-item:hover {
+    background-color: #f0f8ff; /* 背景色を薄い青に（お好みで） */
+    color: #007bff;            /* 文字色を青っぽく */
+    cursor: pointer;           /* 指マークにする */
+    text-decoration: underline; /* 下線を引く */
+    opacity: 0.8;              /* 少し透明にする（ふわっとさせる） */
+    transition: 0.2s;          /* 変化を滑らかに */
+}
+
+/* 少し動きをつけたい場合はこれもおすすめ */
+.clickable-item:active {
+    transform: scale(0.95);    /* クリックした瞬間に少し小さくする */
+}
 .work-icon-symbol {
     font-size: 1.2rem;
     line-height: 1;
@@ -1214,8 +808,7 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     color: #fff;
 }
 
-    </style>
- 
+    </style> 
  <script>
         // 1. 詳細へ瞬時にジャンプ（スクロール演出なし）
         function scrollToDetail(id) {
@@ -1584,13 +1177,6 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
 </body>
 </html>        `;
 
-        // --- 3. 新しいタブを作成して中身を書き込む関数 ---
-        function openVirtualTab(content) {
-            const newWindow = window.open("", "_blank");
-            newWindow.document.open();
-            newWindow.document.write(content);
-            newWindow.document.close();
-        }
     </script>
 </body>
 </html>

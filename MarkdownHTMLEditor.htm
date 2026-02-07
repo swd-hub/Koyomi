@@ -6,7 +6,6 @@
 <title>栽培こよみエディタ（修正版）</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-
 <style>
         * {
             box-sizing: border-box;
@@ -777,7 +776,105 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     .file-info strong {
         color: #2d5016;
     }
+
+    /* ========== 1. 表示エリア（プレビュー・HTMLソース） ========== */
+    #html-display-area {
+        display: none;
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        background: #2d2d2d;
+        color: #ccc;
+        padding: 20px;
+        border-radius: 8px;
+        height: 100%;
+        overflow-y: auto;
+        border: 1px solid #444;
+        line-height: 1.5;
+    }
+
+    /* トグルボタンの強調状態 */
+    .active-toggle {
+        background-color: #ff9800 !important;
+        color: white !important;
+    }
+
+    /* ========== 2. インタラクティブ要素（ホバー・アニメーション） ========== */
+    .clickable-item {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .clickable-item:hover {
+        background-color: #e3f2fd;
+        border: 1px solid #2196f3;
+    }
+
+    /* ハイライト点滅アニメーション */
+    .highlight-flash {
+        animation: flash-bg 2s ease-out;
+    }
+
+    @keyframes flash-bg {
+        0% { background-color: #fff9c4; }
+        100% { background-color: transparent; }
+    }
+
+    /* ========== 3. モーダルウィンドウ（HTML書き出し用） ========== */
+    #htmlModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        width: 80%;
+        max-width: 900px;
+        position: relative;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 閉じる「×」ボタン */
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #666;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+        color: #ff0000;
+    }
+
+    /* モーダル内のコード表示エリア */
+    #html-display {
+        white-space: pre-wrap;
+        word-break: break-all;
+        font-family: monospace;
+        background: #f4f4f4;
+        padding: 15px;
+        border: 1px solid #ddd;
+        max-height: 70vh;
+        overflow-y: auto;
+        margin: 15px 0;
+    }
 </style>
+
 </head>
 <body>
 
@@ -1027,7 +1124,6 @@ th:nth-child(4), td:nth-child(4) { width: 30%; } /* 主な作業 */
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${pageTitle}</title>
-    <style>${commonCSS}</style>
 </head>
 <body>
     <div class="container">
@@ -1093,103 +1189,5 @@ ${content}
     
 </script>
 
-<style>
-    /* ========== 1. 表示エリア（プレビュー・HTMLソース） ========== */
-    #html-display-area {
-        display: none;
-        white-space: pre-wrap;
-        word-break: break-all;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-        background: #2d2d2d;
-        color: #ccc;
-        padding: 20px;
-        border-radius: 8px;
-        height: 100%;
-        overflow-y: auto;
-        border: 1px solid #444;
-        line-height: 1.5;
-    }
-
-    /* トグルボタンの強調状態 */
-    .active-toggle {
-        background-color: #ff9800 !important;
-        color: white !important;
-    }
-
-    /* ========== 2. インタラクティブ要素（ホバー・アニメーション） ========== */
-    .clickable-item {
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .clickable-item:hover {
-        background-color: #e3f2fd;
-        border: 1px solid #2196f3;
-    }
-
-    /* ハイライト点滅アニメーション */
-    .highlight-flash {
-        animation: flash-bg 2s ease-out;
-    }
-
-    @keyframes flash-bg {
-        0% { background-color: #fff9c4; }
-        100% { background-color: transparent; }
-    }
-
-    /* ========== 3. モーダルウィンドウ（HTML書き出し用） ========== */
-    #htmlModal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 1000;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        width: 80%;
-        max-width: 900px;
-        position: relative;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    /* 閉じる「×」ボタン */
-    .close-btn {
-        position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 28px;
-        font-weight: bold;
-        color: #666;
-        cursor: pointer;
-        line-height: 1;
-        transition: color 0.2s;
-    }
-
-    .close-btn:hover {
-        color: #ff0000;
-    }
-
-    /* モーダル内のコード表示エリア */
-    #html-display {
-        white-space: pre-wrap;
-        word-break: break-all;
-        font-family: monospace;
-        background: #f4f4f4;
-        padding: 15px;
-        border: 1px solid #ddd;
-        max-height: 70vh;
-        overflow-y: auto;
-        margin: 15px 0;
-    }
-</style>
 </body>
 </html>
