@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>栽培こよみ構造エディタ（完全版）</title>
+    <title>栽培こよみ構造エディタ</title>
     <style>
         /* =========================================
            エディタ専用スタイル
@@ -15,344 +16,690 @@
         }
 
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Meiryo, sans-serif;
-            display: flex; height: 100vh;
-            overflow: hidden; background: var(--editor-bg);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--editor-bg);
         }
 
-        /* レイアウト */
         #editor-container {
-            width: 480px; height: 100%;
+            width: 450px;
+            height: 100%;
             border-right: 1px solid #ccc;
-            display: flex; flex-direction: column;
-            background: white; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            background: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
 
         #preview-container {
-            flex: 1; height: 100%;
-            overflow-y: auto; padding: 20px;
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
             background: #eee;
-            scroll-behavior: smooth;
         }
 
-        /* ツールバー */
         .toolbar {
             padding: 10px 15px;
             background: var(--sidebar-color);
             color: white;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .toolbar h2 { margin: 0; font-size: 1rem; }
+        .toolbar h2 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
 
-        .scroll-area { flex: 1; overflow-y: auto; padding: 15px; }
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
 
-        .form-group { margin-bottom: 15px; }
+        .form-group {
+            margin-bottom: 15px;
+        }
+
         .form-group label {
-            display: block; font-weight: bold; font-size: 0.85rem;
-            margin-bottom: 5px; color: #333;
+            display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #333;
         }
 
-        input[type="text"], textarea {
-            width: 100%; padding: 8px;
-            border: 1px solid #ccc; border-radius: 4px;
-            box-sizing: border-box; font-size: 14px;
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
         }
 
         .card {
-            border: 1px solid #ddd; padding: 12px;
-            margin-bottom: 10px; border-radius: 6px;
-            background: #fdfdfd; position: relative;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            background: #fdfdfd;
         }
 
-        /* ボタン類 */
         button {
-            padding: 6px 12px; cursor: pointer;
-            border-radius: 4px; border: none;
-            font-weight: bold; transition: 0.2s;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
-        .btn-add { background: var(--accent-color); color: white; }
-        .btn-del { background: #e91e63; color: white; padding: 4px 8px; font-size: 0.75rem; }
-        .btn-export { background: #2196f3; color: white; }
-        button:hover { opacity: 0.8; }
+        .btn-add {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-del {
+            background: #e91e63;
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .btn-export {
+            background: #2196f3;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
 
         .section-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid var(--sidebar-color);
-            padding-bottom: 5px; margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            margin: 20px 0 10px 0;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--sidebar-color);
         }
 
         /* =========================================
-           プレビュー用スタイル (こよみ表示用)
+           プレビュー用スタイル
            ========================================= */
         .koyomi-preview {
-            background: white; padding: 40px;
-            max-width: 850px; margin: 0 auto;
-            border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            color: #333; line-height: 1.6;
+            background: white;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            color: #333;
         }
 
-        .koyomi-preview h1 { text-align: center; color: var(--sidebar-color); margin-bottom: 5px; }
-        .koyomi-preview .subtitle { text-align: center; color: #666; margin-bottom: 20px; }
-        
+        .koyomi-preview h1 {
+            text-align: center;
+            color: var(--sidebar-color);
+            margin-bottom: 5px;
+        }
+
+        .koyomi-preview .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
         .koyomi-preview table {
-            width: 100%; border-collapse: collapse; margin-bottom: 25px;
-            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
         }
 
         .koyomi-preview th {
-            background: var(--sidebar-color); color: white;
-            padding: 10px; border: 1px solid #1a3a0d;
+            background: var(--sidebar-color);
+            color: white;
+            padding: 10px;
+            border: 1px solid #1a3a0d;
         }
 
         .koyomi-preview td {
-            padding: 10px; border: 1px solid #ddd; text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
         }
 
         .koyomi-preview .detail-box {
-            background: #f0f8ff; border: 2px solid var(--sidebar-color);
-            border-radius: 8px; padding: 20px; margin: 25px 0;
-            scroll-margin-top: 20px;
+            background: #f0f8ff;
+            border: 2px solid var(--sidebar-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
         }
 
         .koyomi-preview .detail-box h3 {
-            color: var(--sidebar-color); margin: 0 0 10px 0;
+            color: var(--sidebar-color);
             border-bottom: 2px solid var(--sidebar-color);
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0;
         }
 
         .koyomi-preview .clickable-item {
-            cursor: pointer; text-decoration: underline;
-            color: #2e7d32; font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #2e7d32;
+            font-weight: bold;
         }
 
         .koyomi-preview .back-button {
-            padding: 2px 8px; background: #666; color: white;
-            font-size: 0.75rem; border-radius: 4px;
+            cursor: pointer;
+            background: #666;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
         }
 
-        .btn-calc {
-            display: inline-block; margin-top: 10px;
-            padding: 8px 16px; border-radius: 6px;
-            text-decoration: none; font-weight: bold;
-            border: 2px solid;
+        /* アイコン一覧小窓のスタイル */
+        #icon-panel {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            width: 300px;
+            max-height: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 8px;
+            overflow-y: auto;
+            padding: 10px;
         }
-        .btn-calc-herbicide { border-color: #0369a1; color: #0369a1; }
-        .btn-calc-insecticide { border-color: #15803d; color: #15803d; }
 
+        #icon-panel h4 {
+            margin: 0 0 10px 0;
+            border-bottom: 2px solid var(--sidebar-color);
+            padding-bottom: 5px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .icon-item {
+            padding: 4px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon-item:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
+
 <body>
 
     <div id="editor-container">
         <div class="toolbar">
             <h2>栽培こよみエディタ</h2>
-            <div style="display: flex; gap: 5px;">
-                <button onclick="saveAsJSON()" style="background: #4a5568; color: white; font-size: 0.7rem;">💾 保存</button>
-                <label style="background: #718096; color: white; font-size: 0.7rem; padding: 6px 10px; border-radius: 4px; cursor: pointer; display: flex; align-items: center;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button onclick="saveAsJSON()" style="background: #4a5568; color:white; font-size: 0.75rem;">💾
+                    保存</button>
+                <label
+                    style="background: #718096; color:white; font-size: 0.75rem; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
                     📂 読込 <input type="file" accept=".json" onchange="loadFromJSON(event)" style="display:none;">
                 </label>
-                <button class="btn-export" onclick="exportHTML()" style="font-size: 0.7rem;">HTML出力</button>
+                <button class="btn-export" onclick="exportHTML()" style="font-size: 0.75rem;">HTML出力</button>
+                <button onclick="toggleIconPanel()" style="background: #ed8936; color:white; font-size: 0.75rem;">😊
+                    アイコン</button>
             </div>
         </div>
-        
+        <!-- アイコン一覧小窓 -->
+        <div id="icon-panel">
+            <h4>😊 アイコン一覧</h4>
+            <div id="icon-list-content" class="icon-grid"></div>
+        </div>
+
         <div class="scroll-area">
             <div class="form-group">
-                <label>タイトル</label>
-                <input type="text" id="title" oninput="koyomiData.title=this.value;renderPreview()" placeholder="例：栽培こよみ">
+                <label>こよみタイトル</label>
+                <input type="text" id="title" oninput="updateTitle(this.value)" placeholder="タイトル">
             </div>
             <div class="form-group">
                 <label>サブタイトル</label>
-                <input type="text" id="subtitle" oninput="koyomiData.subtitle=this.value;renderPreview()" placeholder="例：WCS用">
+                <input type="text" id="subtitle" oninput="updateSubtitle(this.value)" placeholder="サブタイトル">
             </div>
 
             <div class="section-header">
-                <h3 style="font-size: 0.9rem; margin:0;">🗓️ スケジュール</h3>
-                <button class="btn-add" onclick="addRow()" style="font-size: 0.7rem;">+ 行追加</button>
+                <h3>🗓️ スケジュール</h3>
+                <button class="btn-add" onclick="addRow()">+ 追加</button>
             </div>
             <div id="schedule-rows"></div>
 
             <div class="section-header">
-                <h3 style="font-size: 0.9rem; margin:0;">📖 詳細ボックス</h3>
-                <button class="btn-add" onclick="addDetail()" style="font-size: 0.7rem;">+ 追加</button>
+                <h3>📖 詳細情報</h3>
+                <button class="btn-add" onclick="addDetail()">+ 追加</button>
             </div>
             <div id="detail-list"></div>
         </div>
     </div>
 
     <div id="preview-container">
-        <div id="live-preview" class="koyomi-preview">
-            </div>
+        <div id="live-preview" class="koyomi-preview"></div>
     </div>
-<script>
-    // --- データ構造 ---
-    let koyomiData = {
-        title: "コシヒカリ栽培こよみ",
-        subtitle: "WCS（ホールクロップサイレージ）用",
-        rows: [
-            { month: "3月", deco: "中旬", stage: "育苗", task: "種子消毒・浸種" }
-        ],
-        details: [
-            { id: "d1", title: "育苗", items: "・温度管理を徹底する", pesticideType: "none" }
-        ]
-    };
 
-    const iconMap = {
-        '土づくり': '🌱', '育苗': '🌱', '播種': '🫘', '田植': '🌱', 
-        '除草': '☘️', '施薬': '💊', '中干し': '🌊', '収穫': '✂️', '出穂': '🌾'
-    };
+    <script>
+        // データ構造（初期値）
+        let koyomiData = {
+            title: "コシヒカリ栽培こよみ（一般・早植）",
+            subtitle: "WCS（ホールクロップサイレージ）用 最終更新: 2026年02月15日",
+            rows: [
+                { month: "3月", deco: "中旬", stage: "播種", task: "種子消毒・浸種" },
+                { month: "", deco: "下旬", stage: "育苗", task: "催芽・播種" },
+                { month: "4月", deco: "上旬", stage: "土づくり", task: "堆肥散布" },
+                { month: "", deco: "中旬", stage: "移植期", task: "田植え準備・田植" },
+                { month: "5月", deco: "上旬", stage: "除草", task: "除草剤散布" },
+                { month: "6月", deco: "中旬", stage: "分げつ", task: "中干し開始" },
+                { month: "8月", deco: "上旬", stage: "出穂", task: "施薬（防除）" },
+                { month: "9月", deco: "上旬", stage: "収穫", task: "刈取り" }
+            ],
+            details: [
+                { id: "ref_tsuchizukuri", title: "🌱 土づくり", items: "堆肥（2t/10a）を散布し地力を高める。\n深耕（15cm以上）を心がける。\n排水対策（溝切り等）を徹底する。", pesticideType: "none" },
+                { id: "ref_hashu", title: "🫘 播種", items: "催芽が揃ってから播種する。\n育苗箱当り乾籾150gを基準とする。\n播種後の温度管理を徹底する。", pesticideType: "none" },
+                { id: "ref_josozai", title: "☘️ 除草剤散布", items: "田植後5〜10日に散布する。\n散布後7日間はかけ流しを行わない。\n藻類の発生状況に応じて薬剤を選択する。", pesticideType: "herbicide" },
+                { id: "ref_seyaku", title: "💊 施薬（いもち病カメムシ）", items: "出穂期の防除を徹底する。\n希釈倍数に注意して散布する。\n早朝または夕方の風の弱い時間に散布する。", pesticideType: "insecticide" }
+            ]
+        };
 
-    // --- 初期化 ---
-    function init() {
-        renderEditor();
-        renderPreview();
-    }
+        const iconMap = {
+            // 播種・育苗関連
+            '播種': '🫘', '発芽': '🌱', '定植': '🌱', '育苗': '🌱',
+            '施薬': '💊', '浸種': '💧',
 
-    // --- エディタ描画 ---
-    function renderEditor() {
-        document.getElementById('title').value = koyomiData.title;
-        document.getElementById('subtitle').value = koyomiData.subtitle;
+            // 田んぼ準備関連
+            'ほ場準備': '🌱', '土づくり': '🌱', '耕うん': '🚜', '畝立て': '🚜', '作溝': '🚜',
+            '代かき': '🟦',
 
-        // スケジュール行
-        const rowArea = document.getElementById('schedule-rows');
-        rowArea.innerHTML = '';
-        koyomiData.rows.forEach((row, i) => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `
+            // 田植え・移植関連
+            '田植': '🌱', '移植': '🌱',
+
+            // 生育ステージ
+            '葉期': '🍃', '展葉': '🌿', '分げつ': '🌿', '最高': '🌿',
+            '活着': '🌱', '幼穂形成': '🌾', '出穂': '🌾',
+            '絹糸': '🌾', '登熟': '🌾', '成熟': '🌾',
+            '水熟': '💧', '乳熟': '🥛', '糊熟': '🥛',
+            '黄熟': '🟡', '完熟': '✅', '開花': '🌷',
+
+            // 施肥関連
+            '基肥': '🧪', '追肥': '🧪', '施肥': '🧪',
+
+            // 水管理関連
+            '中干し': '🌊', '落水': '💧',
+
+            // 除草・防除関連
+            '除草': '☘️',
+            '病害虫': '🐛',
+
+            // その他
+            '鳥獣': '🐦‍⬛', '獣害': '🦌', '栽培スケジュール': '📅', '詳細情報': '📖',
+            '収穫': '✂️', '倒伏': '⚠️', '見回り': '🔍', '出荷': '📦'
+        };
+
+
+        // --- 基本操作関数 ---
+        function updateTitle(val) { koyomiData.title = val; renderPreview(); }
+        function updateSubtitle(val) { koyomiData.subtitle = val; renderPreview(); }
+
+        function addRow() {
+            let nextMonth = "";
+            let nextDeco = "上旬";
+
+            if (koyomiData.rows.length > 0) {
+                const lastRow = koyomiData.rows[koyomiData.rows.length - 1];
+                const lastDeco = lastRow.deco;
+
+                // 最後に月が指定されている行を遡って探す
+                let lastMonthStr = "";
+                for (let i = koyomiData.rows.length - 1; i >= 0; i--) {
+                    if (koyomiData.rows[i].month) {
+                        lastMonthStr = koyomiData.rows[i].month;
+                        break;
+                    }
+                }
+
+                if (lastDeco === "上旬") {
+                    nextMonth = "";
+                    nextDeco = "中旬";
+                } else if (lastDeco === "中旬") {
+                    nextMonth = "";
+                    nextDeco = "下旬";
+                } else {
+                    // 下旬、またはその他の場合は次の月の上旬へ
+                    let m = parseInt(lastMonthStr) || 1;
+                    let nm = (m % 12) + 1;
+                    nextMonth = nm + "月";
+                    nextDeco = "上旬";
+                }
+            } else {
+                nextMonth = "1月";
+                nextDeco = "上旬";
+            }
+
+            koyomiData.rows.push({ month: nextMonth, deco: nextDeco, stage: "", task: "" });
+            renderEditor();
+            renderPreview();
+        }
+        function removeRow(index) {
+            koyomiData.rows.splice(index, 1);
+            renderEditor();
+            renderPreview();
+        }
+        function addDetail() {
+            const id = "ref_" + Date.now();
+            koyomiData.details.push({ id: id, title: "新しい詳細", items: "・内容を入力してください", pesticideType: "none" });
+            renderEditor();
+            renderPreview();
+        }
+        function removeDetail(index) {
+            koyomiData.details.splice(index, 1);
+            renderEditor();
+            renderPreview();
+        }
+
+        // フォーカスされている要素を記録する変数
+        let lastFocusedElement = null;
+
+        function toggleIconPanel() {
+            const panel = document.getElementById('icon-panel');
+            const isOpen = panel.style.display === 'block';
+
+            if (!isOpen) {
+                // 内容を生成
+                const content = document.getElementById('icon-list-content');
+                content.innerHTML = '';
+                Object.keys(iconMap).forEach(key => {
+                    const div = document.createElement('div');
+                    div.className = 'icon-item';
+                    div.style.cursor = 'pointer'; // クリック可能であることを示す
+                    div.innerHTML = `<span>${iconMap[key]}</span> <span>${key}</span>`;
+                    // クリック時に最後にフォーカスした場所へ挿入
+                    div.onclick = (e) => {
+                        e.preventDefault(); // フォーカスが外れないようにする
+                        insertKeyword(key);
+                    };
+                    content.appendChild(div);
+                });
+                panel.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        // キーワードを入力欄のカーソル位置に挿入する関数
+        function insertKeyword(word) {
+            if (!lastFocusedElement) return;
+
+            const el = lastFocusedElement;
+            const start = el.selectionStart;
+            const end = el.selectionEnd;
+            const text = el.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end);
+
+            el.value = before + word + after;
+            el.selectionStart = el.selectionEnd = start + word.length;
+            el.focus();
+
+            // データ(koyomiData)を直接更新（Dispatchだけでは不十分な場合があるため）
+            if (el.oninput) {
+                el.oninput();
+            } else {
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+
+        // すべての入力要素にフォーカス記録のイベントを登録
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                lastFocusedElement = e.target;
+            }
+        });
+
+        function init() {
+            renderEditor();
+            renderPreview();
+        }
+
+        function saveAsJSON() {
+            const jsonStr = JSON.stringify(koyomiData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `koyomi_data_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.rows && importedData.details) {
+                        koyomiData = importedData;
+                        renderEditor();
+                        renderPreview();
+                    }
+                } catch (err) { alert("読込に失敗しました"); }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportHTML() {
+            const previewContent = document.getElementById('live-preview').innerHTML;
+            const fullHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${koyomiData.title}</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f0f0f0; line-height: 1.6; }
+        .koyomi-preview { background: white; padding: 40px; max-width: 900px; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2d5016; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        th { background: #2d5016; color: white; padding: 12px; border: 1px solid #1a3a0d; }
+        td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        .detail-box { background: #f0f8ff; border: 2px solid #2d5016; border-radius: 8px; padding: 20px; margin: 30px 0; position: relative; }
+        .detail-box h3 { color: #2d5016; border-bottom: 2px solid #2d5016; display: flex; justify-content: space-between; margin-top: 0; }
+        .clickable-item { cursor: pointer; text-decoration: underline; color: #2e7d32; font-weight: bold; }
+        .back-button { cursor: pointer; background: #666; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="koyomi-preview">${previewContent}</div>
+    <script>
+        function smartScroll(id) {
+            if (id === 'preview-container') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            const el = document.getElementById(id);
+            if(el) window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+        }
+    <\/script>
+</body>
+</html>`;
+
+            const blob = new Blob([fullHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "koyomi_export.html";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function renderEditor() {
+            document.getElementById('title').value = koyomiData.title;
+            document.getElementById('subtitle').value = koyomiData.subtitle;
+
+            const rowArea = document.getElementById('schedule-rows');
+            rowArea.innerHTML = '';
+            koyomiData.rows.forEach((row, i) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
                     <input type="text" value="${row.month}" oninput="koyomiData.rows[${i}].month=this.value;renderPreview()" placeholder="月">
                     <input type="text" value="${row.deco}" oninput="koyomiData.rows[${i}].deco=this.value;renderPreview()" placeholder="旬">
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
                     <input type="text" value="${row.stage}" oninput="koyomiData.rows[${i}].stage=this.value;renderPreview()" placeholder="ステージ">
-                    <input type="text" value="${row.task}" oninput="koyomiData.rows[${i}].task=this.value;renderPreview()" placeholder="作業">
+                    <input type="text" value="${row.task}" oninput="koyomiData.rows[${i}].task=this.value;renderPreview()" placeholder="作業内容">
                 </div>
-                <button class="btn-del" onclick="removeRow(${i})" style="margin-top:5px;">削除</button>`;
-            rowArea.appendChild(div);
-        });
+                <button class="btn-del" onclick="removeRow(${i})">削除</button>`;
+                rowArea.appendChild(div);
+            });
 
-        // 詳細ボックス
-        const detArea = document.getElementById('detail-list');
-        detArea.innerHTML = '';
-        koyomiData.details.forEach((det, i) => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `
+            const detArea = document.getElementById('detail-list');
+            detArea.innerHTML = '';
+            koyomiData.details.forEach((det, i) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
                 <input type="text" value="${det.title}" oninput="koyomiData.details[${i}].title=this.value;renderPreview()" style="font-weight:bold; margin-bottom:5px;">
                 <textarea oninput="koyomiData.details[${i}].items=this.value;renderPreview()">${det.items}</textarea>
-                <div style="display:flex; align-items:center; gap:8px; margin-top:8px; font-size:0.75rem;">
-                    <span>農薬:</span>
-                    <label><input type="radio" name="pest_${i}" value="none" ${det.pesticideType==='none'?'checked':''} onchange="koyomiData.details[${i}].pesticideType='none';renderPreview()"> なし</label>
-                    <label><input type="radio" name="pest_${i}" value="herbicide" ${det.pesticideType==='herbicide'?'checked':''} onchange="koyomiData.details[${i}].pesticideType='herbicide';renderPreview()"> 除草剤</label>
-                    <label><input type="radio" name="pest_${i}" value="insecticide" ${det.pesticideType==='insecticide'?'checked':''} onchange="koyomiData.details[${i}].pesticideType='insecticide';renderPreview()"> 殺虫剤</label>
-                    <button class="btn-del" onclick="removeDetail(${i})" style="margin-left:auto; padding:2px 5px;">削除</button>
+                <div style="display:flex; align-items:center; gap:10px; margin-top:10px; font-size:0.85rem; color:#555;">
+                    <span>農薬計算:</span>
+                    <label><input type="radio" name="pest_${i}" value="none" ${det.pesticideType === 'none' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='none';renderPreview()"> なし</label>
+                    <label><input type="radio" name="pest_${i}" value="herbicide" ${det.pesticideType === 'herbicide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='herbicide';renderPreview()"> 除草剤</label>
+                    <label><input type="radio" name="pest_${i}" value="insecticide" ${det.pesticideType === 'insecticide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='insecticide';renderPreview()"> 殺虫剤</label>
+                    <button class="btn-del" onclick="removeDetail(${i})" style="margin-left:auto; margin-top:0;">削除</button>
                 </div>`;
-            detArea.appendChild(div);
-        });
-    }
+                detArea.appendChild(div);
+            });
+        }
 
-    function addRow() { koyomiData.rows.push({month:"", deco:"", stage:"", task:""}); renderEditor(); renderPreview(); }
-    function removeRow(i) { if(confirm("この行を削除しますか？")){ koyomiData.rows.splice(i,1); renderEditor(); renderPreview(); } }
-    function addDetail() { koyomiData.details.push({id:"d"+Date.now(), title:"新しい項目", items:"", pesticideType:"none"}); renderEditor(); renderPreview(); }
-    function removeDetail(i) { if(confirm("このボックスを削除しますか？")){ koyomiData.details.splice(i,1); renderEditor(); renderPreview(); } }
+        function renderPreview() {
+            const container = document.getElementById('live-preview');
+            let tableHtml = `<table><thead><tr><th style="width:15%">月</th><th style="width:15%">旬</th><th style="width:35%">ステージ</th><th style="width:35%">作業</th></tr></thead><tbody>`;
+            koyomiData.rows.forEach(r => {
+                tableHtml += `<tr><td><strong>${r.month}</strong></td><td>${r.deco}</td><td>${linkify(r.stage)}</td><td>${linkify(r.task)}</td></tr>`;
+            });
+            tableHtml += `</tbody></table>`;
 
-    // --- プレビュー描画 ---
-    function renderPreview() {
-        const container = document.getElementById('live-preview');
-        
-        let tableHtml = `<table><thead><tr><th style="width:15%">月</th><th style="width:15%">旬</th><th style="width:35%">ステージ</th><th style="width:35%">作業</th></tr></thead><tbody>`;
-        koyomiData.rows.forEach(r => {
-            tableHtml += `<tr><td><strong>${r.month}</strong></td><td>${r.deco}</td><td>${linkify(r.stage)}</td><td>${linkify(r.task)}</td></tr>`;
-        });
-        tableHtml += `</tbody></table>`;
-
-        let detsHtml = koyomiData.details.map(d => `
+            let detsHtml = koyomiData.details.map(d => `
             <div id="${d.id}" class="detail-box">
                 <h3>
-                    <span>${d.title}</span> 
-                    <button class="back-button" onclick="document.getElementById('preview-container').scrollTo({top:0, behavior:'smooth'})">↑ 戻る</button>
+                    <span>${linkify(d.title)}</span> 
+                    <button class="back-button" onclick="smartScroll('preview-container')">↑ 戻る</button>
                 </h3>
-                <ul>${d.items.split('\n').filter(t=>t.trim()).map(t=>`<li>${t}</li>`).join('')}</ul>
-                <div style="text-align:right;">
-                    ${d.pesticideType==='herbicide'?'<button onclick="openVirtualTab(herbicideData)" class="btn-calc btn-calc-herbicide">🧮 除草剤計算</button>':''}
-                    ${d.pesticideType==='insecticide'?'<button onclick="openVirtualTab(insecticideData)" class="btn-calc btn-calc-insecticide">🧮 殺虫剤計算</button>':''}
+                <ul>${d.items.split('\n').filter(t => t.trim()).map(t => `<li>${linkify(t)}</li>`).join('')}</ul>
+                <div style="text-align:right; margin-top:10px;">
+                    ${d.pesticideType === 'herbicide' ? '<button onclick="openVirtualTab(herbicideData)" style="border:2px solid #0369a1; color:#0369a1; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 除草剤計算</button>' : ''}
+                    ${d.pesticideType === 'insecticide' ? '<button onclick="openVirtualTab(insecticideData)" style="border:2px solid #15803d; color:#15803d; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 殺虫剤計算</button>' : ''}
                 </div>
             </div>`).join('');
 
-        container.innerHTML = `
-            <h1>${koyomiData.title}</h1>
-            <p class="subtitle">${koyomiData.subtitle}</p>
+            container.innerHTML = `
+            <h1>${linkify(koyomiData.title)}</h1>
+            <p class="subtitle">${linkify(koyomiData.subtitle)}</p>
             <hr>
-            <h2>栽培スケジュール</h2>
+            <h2>${linkify('栽培スケジュール')}</h2>
             ${tableHtml}
             <hr>
-            <h2>詳細情報</h2>
+            <h2>${linkify('詳細情報')}</h2>
             ${detsHtml}`;
-    }
+        }
 
-    // アイコン & リンク処理
-    function linkify(text) {
-        if (!text) return "";
-        let html = text;
-        Object.keys(iconMap).forEach(key => {
-            if (html.includes(key) && !html.includes(iconMap[key])) html = html.split(key).join(iconMap[key] + " " + key);
-        });
-        koyomiData.details.forEach(det => {
-            const keyword = det.title.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
-            if (keyword && html.includes(keyword)) {
-                html = html.replace(new RegExp(keyword, 'g'), `<span class="clickable-item" onclick="const el=document.getElementById('${det.id}'); document.getElementById('preview-container').scrollTo({top: el.offsetTop - 20, behavior:'smooth'})">${keyword}</span>`);
+        function linkify(text) {
+            if (!text) return "";
+            let html = text;
+
+            // 1. アイコン付与 (長い順に並び替えて重複防止)
+            const sortedKeys = Object.keys(iconMap).sort((a, b) => b.length - a.length);
+            sortedKeys.forEach(key => {
+                const icon = iconMap[key];
+                if (html.includes(key)) {
+                    // 「アイコン＋スペース＋キーワード」になっていない箇所のみを置換
+                    // エスケープ処理をしてから正規表現を作成
+                    const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const escapedIcon = icon.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    // 直前にアイコンがない場合にのみアイコンを付与
+                    const regex = new RegExp(`(?<!${escapedIcon}\\s)${escapedKey}`, 'g');
+                    html = html.replace(regex, icon + " " + key);
+                }
+            });
+
+            // 2. 詳細へのリンク付与
+            koyomiData.details.forEach(det => {
+                const keyword = det.title.replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '').trim();
+                if (keyword && html.includes(keyword) && !html.includes(`smartScroll('${det.id}')`)) {
+                    const regex = new RegExp(keyword, 'g');
+                    html = html.replace(regex, `<span class="clickable-item" onclick="smartScroll('${det.id}')">${keyword}</span>`);
+                }
+            });
+            return html;
+        }
+
+        function smartScroll(id) {
+            if (id === 'preview-container') {
+                const container = document.getElementById('preview-container');
+                if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
             }
-        });
-        return html;
-    }
+            const el = document.getElementById(id);
+            if (!el) return;
+            const container = document.getElementById('preview-container');
+            if (container) {
+                container.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+            }
+        }
 
-    // --- JSON & HTML出力 ---
-    function saveAsJSON() {
-        const blob = new Blob([JSON.stringify(koyomiData, null, 2)], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `koyomi_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    }
+        function openVirtualTab(data) {
+            const newWin = window.open("", "_blank");
+            if (newWin) { newWin.document.write(data); newWin.document.close(); }
+        }
 
-    function loadFromJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                koyomiData = JSON.parse(e.target.result);
-                renderEditor(); renderPreview();
-            } catch (err) { alert("無効なファイルです"); }
-        };
-        reader.readAsText(file);
-    }
+        const herbicideData = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>除草剤計算</title><style>body{font-family:sans-serif;background:#f0f9ff;display:flex;justify-content:center;padding:20px;}.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);width:100%;max-width:400px;}input{width:100%;padding:10px;margin:10px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head><body><div class="card"><h2>除草剤 散布計算</h2><label>面積 (a)</label><input type="number" id="area" oninput="calc()"><label>10a当り薬量 (ml/g)</label><input type="number" id="med" oninput="calc()"><p>合計薬量: <strong id="res">0</strong> ml/g</p></div><script>function calc(){const a=document.getElementById('area').value;const m=document.getElementById('med').value;document.getElementById('res').innerText=Math.round((a/10)*m*10)/10;}<\/script></body></html>`;
+        const insecticideData = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>殺虫剤計算</title><style>body{font-family:sans-serif;background:#f0fdf4;display:flex;justify-content:center;padding:20px;}.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);width:100%;max-width:400px;}input{width:100%;padding:10px;margin:10px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head><body><div class="card"><h2>殺虫剤 希釈計算</h2><label>面積 (a)</label><input type="number" id="area" oninput="calc()"><label>希釈倍数 (倍)</label><input type="number" id="rate" oninput="calc()"><p>必要液量(10a当り200L換算): <strong id="res">0</strong> L</p></div><script>function calc(){const a=document.getElementById('area').value;const r=document.getElementById('rate').value;document.getElementById('res').innerText=Math.round((a/10)*200/r*1000*10)/10;}<\/script></body></html>`;
 
-    function exportHTML() {
-        const content = document.getElementById('live-preview').innerHTML;
-        const head = document.head.innerHTML;
-        const fullHtml = `<!DOCTYPE html><html><head>${head}</head><body><div class="koyomi-preview">${content}</div></body></html>`;
-        const blob = new Blob([fullHtml], { type: 'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "koyomi_export.html";
-        a.click();
-    }
+        init();
+    </script>
+</body>
 
-    function openVirtualTab(data) {
-        const newWin = window.open("", "_blank");
-        if (newWin) { newWin.document.write(data); newWin.document.close(); }
-    }
-
-    // 農薬ツール（前回内容を維持）
-    const herbicideData = `<!DOCTYPE html><html><body style="font-family:sans-serif;padding:20px;"><h2>除草剤希釈計算</h2></body></html>`;
-    const insecticideData = `<!DOCTYPE html><html><body style="font-family:sans-serif;padding:20px;"><h2>殺虫剤希釈計算</h2></body></html>`;
-
-    init();
-</script>
-    </body>
 </html>
