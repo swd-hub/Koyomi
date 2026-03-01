@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>栽培こよみ構造エディタ</title>
+
+
     <style>
         /* =========================================
            エディタ専用スタイル
@@ -218,47 +219,92 @@
             font-size: 0.7rem;
         }
 
-        /* アイコン一覧小窓のスタイル */
-        #icon-panel {
-            display: none;
-            position: absolute;
-            top: 50px;
-            right: 15px;
-            width: 300px;
-            max-height: 400px;
+        /* 詳細ボックス内のMarkdown用スタイル */
+        .detail-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
             background: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            border-radius: 8px;
-            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .detail-box th {
+            background: var(--sidebar-color) !important;
+            color: white !important;
+            padding: 8px !important;
+            border: 1px solid #1a3a0d !important;
+        }
+
+        .detail-box td {
+            padding: 8px !important;
+            border: 1px solid #ddd !important;
+            text-align: left !important;
+            background: white !important;
+            color: #333 !important;
+        }
+
+        .detail-box ul {
+            padding-left: 20px;
+        }
+
+        .detail-box p {
+            margin: 10px 0;
+        }
+
+
+        /* テーブルエディタ用スタイル */
+        .table-editor {
+            margin-top: 10px;
             padding: 10px;
-        }
-
-        #icon-panel h4 {
-            margin: 0 0 10px 0;
-            border-bottom: 2px solid var(--sidebar-color);
-            padding-bottom: 5px;
-        }
-
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 5px;
-            font-size: 0.85rem;
-        }
-
-        .icon-item {
-            padding: 4px;
-            border: 1px solid #eee;
+            background: #f8f9fa;
+            border: 1px dashed #cbd5e0;
             border-radius: 4px;
+        }
+
+        .table-editor table {
+            width: 100%;
+            margin-bottom: 5px;
+            border-collapse: collapse;
+        }
+
+        .table-editor input {
+            padding: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .table-editor .controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .btn-table-op {
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            background: #718096;
+            color: white;
+        }
+
+        /* 既存の表リスト表示用 */
+        .existing-tables {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .table-item-tag {
+            background: #edf2f7;
+            border: 1px solid #cbd5e0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.75rem;
             display: flex;
             align-items: center;
             gap: 5px;
-        }
-
-        .icon-item:hover {
-            background: #f0f0f0;
         }
     </style>
 </head>
@@ -330,11 +376,13 @@
                 { month: "9月", deco: "上旬", stage: "収穫", task: "刈取り" }
             ],
             details: [
-                { id: "ref_tsuchizukuri", title: "🌱 土づくり", items: "堆肥（2t/10a）を散布し地力を高める。\n深耕（15cm以上）を心がける。\n排水対策（溝切り等）を徹底する。", pesticideType: "none" },
-                { id: "ref_hashu", title: "🫘 播種", items: "催芽が揃ってから播種する。\n育苗箱当り乾籾150gを基準とする。\n播種後の温度管理を徹底する。", pesticideType: "none" },
-                { id: "ref_josozai", title: "☘️ 除草剤散布", items: "田植後5〜10日に散布する。\n散布後7日間はかけ流しを行わない。\n藻類の発生状況に応じて薬剤を選択する。", pesticideType: "herbicide" },
-                { id: "ref_seyaku", title: "💊 施薬（いもち病カメムシ）", items: "出穂期の防除を徹底する。\n希釈倍数に注意して散布する。\n早朝または夕方の風の弱い時間に散布する。", pesticideType: "insecticide" }
+                { id: "ref_tsuchizukuri", title: "🌱 土づくり", items: "堆肥（2t/10a）を散布し地力を高める。\n深耕（15cm以上）を心がける。\n排水対策（溝切り等）を徹底する。", tables: [{ headers: ["資材名", "使用量"], rows: [["完熟堆肥", "2トン"], ["高度化成", "30kg"]] }], pesticideType: "none" },
+                { id: "ref_hashu", title: "🫘 播種", items: "催芽が揃ってから播種する。\n育苗箱当り乾籾150gを基準とする。\n播種後の温度管理を徹底する。", tables: [], pesticideType: "none" },
+                { id: "ref_josozai", title: "☘️ 除草剤散布", items: "田植後5〜10日に散布する。\n散布後7日間はかけ流しを行わない。\n藻類の発生状況に応じて薬剤を選択する。", tables: [], pesticideType: "herbicide" },
+                { id: "ref_seyaku", title: "💊 施薬（いもち病カメムシ）", items: "出穂期の防除を徹底する。\n希釈倍数に注意して散布する。\n早朝または夕方の風の弱い時間に散布する。", tables: [], pesticideType: "insecticide" }
             ]
+
+
         };
 
         const iconMap = {
@@ -422,10 +470,12 @@
         }
         function addDetail() {
             const id = "ref_" + Date.now();
-            koyomiData.details.push({ id: id, title: "新しい詳細", items: "・内容を入力してください", pesticideType: "none" });
+            koyomiData.details.push({ id: id, title: "新しい詳細", items: "・内容を入力してください", tables: [], pesticideType: "none" });
             renderEditor();
             renderPreview();
         }
+
+
         function removeDetail(index) {
             koyomiData.details.splice(index, 1);
             renderEditor();
@@ -542,6 +592,9 @@
         td { padding: 12px; border: 1px solid #ddd; text-align: center; }
         .detail-box { background: #f0f8ff; border: 2px solid #2d5016; border-radius: 8px; padding: 20px; margin: 30px 0; position: relative; }
         .detail-box h3 { color: #2d5016; border-bottom: 2px solid #2d5016; display: flex; justify-content: space-between; margin-top: 0; }
+        .detail-box table { width: 100%; border-collapse: collapse; margin: 15px 0; background: white; }
+        .detail-box th { background: #2d5016; color: white; padding: 8px; border: 1px solid #1a3a0d; }
+        .detail-box td { padding: 8px; border: 1px solid #ddd; text-align: left; background: white; }
         .clickable-item { cursor: pointer; text-decoration: underline; color: #2e7d32; font-weight: bold; }
         .back-button { cursor: pointer; background: #666; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
     </style>
@@ -597,14 +650,39 @@
             koyomiData.details.forEach((det, i) => {
                 const div = document.createElement('div');
                 div.className = 'card';
+
+                // 登録済みテーブルのリスト表示
+                let tableListHtml = '';
+                if (det.tables && det.tables.length > 0) {
+                    tableListHtml = '<div class="existing-tables">';
+                    det.tables.forEach((table, ti) => {
+                        tableListHtml += `
+                        <div class="table-item-tag">
+                            📊 表 (${table.headers.length}列×${table.rows.length}行)
+                            <button onclick="removeTable(${i}, ${ti})" style="background:none; border:none; cursor:pointer; font-size:12px; color:#e91e63; padding:0;">[削除]</button>
+                        </div>`;
+                    });
+                    tableListHtml += '</div>';
+                }
+
                 div.innerHTML = `
+                <label style="font-size:0.75rem;">タイトル</label>
                 <input type="text" value="${det.title}" oninput="koyomiData.details[${i}].title=this.value;renderPreview()" style="font-weight:bold; margin-bottom:5px;">
-                <textarea oninput="koyomiData.details[${i}].items=this.value;renderPreview()">${det.items}</textarea>
-                <div style="display:flex; align-items:center; gap:10px; margin-top:10px; font-size:0.85rem; color:#555;">
+                
+                <label style="font-size:0.75rem;">箇条書き</label>
+                <textarea oninput="koyomiData.details[${i}].items=this.value;renderPreview()" style="height:60px; margin-bottom:5px;">${det.items}</textarea>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-size:0.75rem;">表の管理</label>
+                    <button class="btn-add" onclick="openTableCreator(${i})" style="font-size:0.7rem; padding:4px 8px; background:#4299e1;">📂 別窓で表を作る</button>
+                </div>
+                ${tableListHtml}
+
+                <div style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.8rem; color:#555;">
                     <span>農薬計算:</span>
-                    <label><input type="radio" name="pest_${i}" value="none" ${det.pesticideType === 'none' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='none';renderPreview()"> なし</label>
-                    <label><input type="radio" name="pest_${i}" value="herbicide" ${det.pesticideType === 'herbicide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='herbicide';renderPreview()"> 除草剤</label>
-                    <label><input type="radio" name="pest_${i}" value="insecticide" ${det.pesticideType === 'insecticide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='insecticide';renderPreview()"> 殺虫剤</label>
+                    <label><input type="radio" name="pest_${i}" value="none" ${det.pesticideType === 'none' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='none';renderPreview()"> 無</label>
+                    <label><input type="radio" name="pest_${i}" value="herbicide" ${det.pesticideType === 'herbicide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='herbicide';renderPreview()"> 除草</label>
+                    <label><input type="radio" name="pest_${i}" value="insecticide" ${det.pesticideType === 'insecticide' ? 'checked' : ''} onchange="koyomiData.details[${i}].pesticideType='insecticide';renderPreview()"> 殺虫</label>
                     <button class="btn-del" onclick="removeDetail(${i})" style="margin-left:auto; margin-top:0;">削除</button>
                 </div>`;
                 detArea.appendChild(div);
@@ -619,18 +697,30 @@
             });
             tableHtml += `</tbody></table>`;
 
-            let detsHtml = koyomiData.details.map(d => `
-            <div id="${d.id}" class="detail-box">
-                <h3>
-                    <span>${linkify(d.title)}</span> 
-                    <button class="back-button" onclick="smartScroll('preview-container')">↑ 戻る</button>
-                </h3>
-                <ul>${d.items.split('\n').filter(t => t.trim()).map(t => `<li>${linkify(t)}</li>`).join('')}</ul>
-                <div style="text-align:right; margin-top:10px;">
-                    ${d.pesticideType === 'herbicide' ? '<button onclick="openVirtualTab(herbicideData)" style="border:2px solid #0369a1; color:#0369a1; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 除草剤計算</button>' : ''}
-                    ${d.pesticideType === 'insecticide' ? '<button onclick="openVirtualTab(insecticideData)" style="border:2px solid #15803d; color:#15803d; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 殺虫剤計算</button>' : ''}
-                </div>
-            </div>`).join('');
+            let detsHtml = koyomiData.details.map(d => {
+                const listHtml = d.items ? `<ul>${d.items.split('\n').filter(t => t.trim()).map(t => `<li>${linkify(t)}</li>`).join('')}</ul>` : '';
+
+                let tablesHtml = (d.tables || []).map(table => {
+                    let ths = table.headers.map(h => `<th>${linkify(h)}</th>`).join('');
+                    let trs = table.rows.map(row => `<tr>${row.map(cell => `<td>${linkify(cell)}</td>`).join('')}</tr>`).join('');
+                    return `<div class="table-wrapper"><table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
+                }).join('');
+
+                return `
+                <div id="${d.id}" class="detail-box">
+                    <h3>
+                        <span>${linkify(d.title)}</span> 
+                        <button class="back-button" onclick="smartScroll('preview-container')">↑ 戻る</button>
+                    </h3>
+                    ${listHtml}
+                    ${tablesHtml}
+                    <div style="text-align:right; margin-top:10px;">
+                        ${d.pesticideType === 'herbicide' ? '<button onclick="openVirtualTab(herbicideData)" style="border:2px solid #0369a1; color:#0369a1; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 除草剤計算</button>' : ''}
+                        ${d.pesticideType === 'insecticide' ? '<button onclick="openVirtualTab(insecticideData)" style="border:2px solid #15803d; color:#15803d; background:white; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">🧮 殺虫剤計算</button>' : ''}
+                    </div>
+                </div>`;
+            }).join('');
+
 
             container.innerHTML = `
             <h1>${linkify(koyomiData.title)}</h1>
@@ -695,7 +785,164 @@
             if (newWin) { newWin.document.write(data); newWin.document.close(); }
         }
 
+        // --- テーブル作成（別窓）用関数 ---
+        function openTableCreator(di) {
+            const tableWin = window.open("", "_blank", "width=850,height=700");
+            if (!tableWin) {
+                alert("ポップアップがブロックされました。ブラウザの設定で「ポップアップを許可」にしてください。");
+                return;
+            }
+            tableWin.document.write(tableCreatorHtml(di));
+            tableWin.document.close();
+        }
+
+        // 別窓からデータを受け取る関数
+        function receiveTableFromPopup(di, tableData) {
+            if (!koyomiData.details[di].tables) koyomiData.details[di].tables = [];
+            koyomiData.details[di].tables.push(tableData);
+            renderEditor();
+            renderPreview();
+        }
+
+        function removeTable(di, ti) {
+            if (!confirm("この表を削除してもよろしいですか？")) return;
+            koyomiData.details[di].tables.splice(ti, 1);
+            renderEditor();
+            renderPreview();
+        }
+
+        const tableCreatorHtml = (di) => `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>表の新規作成 - 栽培こよみエディタ</title>
+    <style>
+        body { font-family: 'Segoe UI', Meiryo, sans-serif; padding: 30px; background: #f0f4f8; color: #2d3748; line-height: 1.5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h2 { color: #2d5016; margin-top: 0; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #2d5016; padding-bottom: 10px; }
+        .setup-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        label { font-weight: bold; font-size: 0.9rem; }
+        input[type="number"] { width: 70px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 1rem; }
+        .grid-container { display: none; overflow-x: auto; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        table { border-collapse: collapse; margin-top: 20px; width: 100%; background: white; }
+        th, td { border: 1px solid #e2e8f0; padding: 0; }
+        th { background: #2d5016; color: white; }
+        td input { width: 100%; border: none; padding: 12px; font-size: 0.9rem; box-sizing: border-box; background: transparent; }
+        th input { width: 100%; border: none; padding: 12px; font-size: 0.9rem; font-weight: bold; color: white; box-sizing: border-box; background: rgba(255,255,255,0.1); text-align: center; }
+        th input::placeholder { color: rgba(255,255,255,0.5); }
+        td input:focus, th input:focus { outline: 2px solid #4a90e2; background: #f7fafc; color: #2d3748; }
+        .btn { padding: 12px 24px; cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-blue { background: #3182ce; color: white; }
+        .btn-green { background: #38a169; color: white; margin-top: 30px; width: 100%; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(56, 161, 105, 0.2); }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn:active { transform: translateY(0); }
+        .hint { font-size: 0.85rem; color: #718096; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 表の新規作成</h2>
+        
+        <div class="card">
+            <div class="setup-row">
+                <div>
+                    <label>列数 (横)</label><br>
+                    <input type="number" id="cols" value="2" min="1" max="10">
+                </div>
+                <div>
+                    <label>行数 (縦)</label><br>
+                    <input type="number" id="rows" value="3" min="1" max="50">
+                </div>
+                <div style="flex:1; display:flex; align-items: flex-end;">
+                    <button class="btn btn-blue" onclick="generateGrid()">入力グリッドを表示</button>
+                </div>
+            </div>
+            <p class="hint">まず必要な列数と行数を決めてボタンを押してください。</p>
+        </div>
+
+        <div id="grid-area" class="card grid-container">
+            <h3 style="margin-top:0; font-size:1rem;">✏️ 内容を入力</h3>
+            <p class="hint">※一番上の行は「ヘッダー（見出し）」になります。</p>
+            <table id="input-table"></table>
+            <button class="btn btn-green" onclick="submitTable()">✅ 完成！元の画面に反映する</button>
+        </div>
+    </div>
+
+    <script>
+        let currentCols = 0;
+        let currentRows = 0;
+
+        function generateGrid() {
+            currentCols = parseInt(document.getElementById('cols').value);
+            currentRows = parseInt(document.getElementById('rows').value);
+            if(isNaN(currentCols) || currentCols < 1) return;
+            if(isNaN(currentRows) || currentRows < 1) return;
+
+            const table = document.getElementById('input-table');
+            table.innerHTML = "";
+
+            // ヘッダー
+            const thead = document.createElement('thead');
+            const htr = document.createElement('tr');
+            for(let c=0; c<currentCols; c++) {
+                const th = document.createElement('th');
+                th.innerHTML = '<input type="text" placeholder="ヘッダー' + (c+1) + '" id="h_' + c + '">';
+                htr.appendChild(th);
+            }
+            thead.appendChild(htr);
+            table.appendChild(thead);
+
+            // データ
+            const tbody = document.createElement('tbody');
+            for(let r=0; r<currentRows; r++) {
+                const tr = document.createElement('tr');
+                for(let c=0; c<currentCols; c++) {
+                    const td = document.createElement('td');
+                    td.innerHTML = '<input type="text" id="cell_' + r + '_' + c + '">';
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+
+            document.getElementById('grid-area').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function submitTable() {
+            const headers = [];
+            for(let c=0; c<currentCols; c++) {
+                headers.push(document.getElementById('h_' + c).value || " ");
+            }
+
+            const rows = [];
+            for(let r=0; r<currentRows; r++) {
+                const row = [];
+                for(let c=0; c<currentCols; c++) {
+                    row.push(document.getElementById('cell_' + r + '_' + c).value || " ");
+                }
+                rows.push(row);
+            }
+
+            const tableData = { headers, rows };
+            if (window.opener && !window.opener.closed) {
+                window.opener.receiveTableFromPopup(${di}, tableData);
+                window.close();
+            } else {
+                alert("元のエディタ画面が見つかりません。");
+            }
+        }
+    <\/script>
+</body>
+</html>`;
+
         const herbicideData = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>除草剤計算</title><style>body{font-family:sans-serif;background:#f0f9ff;display:flex;justify-content:center;padding:20px;}.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);width:100%;max-width:400px;}input{width:100%;padding:10px;margin:10px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head><body><div class="card"><h2>除草剤 散布計算</h2><label>面積 (a)</label><input type="number" id="area" oninput="calc()"><label>10a当り薬量 (ml/g)</label><input type="number" id="med" oninput="calc()"><p>合計薬量: <strong id="res">0</strong> ml/g</p></div><script>function calc(){const a=document.getElementById('area').value;const m=document.getElementById('med').value;document.getElementById('res').innerText=Math.round((a/10)*m*10)/10;}<\/script></body></html>`;
+
+
+
         const insecticideData = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>殺虫剤計算</title><style>body{font-family:sans-serif;background:#f0fdf4;display:flex;justify-content:center;padding:20px;}.card{background:white;padding:20px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);width:100%;max-width:400px;}input{width:100%;padding:10px;margin:10px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head><body><div class="card"><h2>殺虫剤 希釈計算</h2><label>面積 (a)</label><input type="number" id="area" oninput="calc()"><label>希釈倍数 (倍)</label><input type="number" id="rate" oninput="calc()"><p>必要液量(10a当り200L換算): <strong id="res">0</strong> L</p></div><script>function calc(){const a=document.getElementById('area').value;const r=document.getElementById('rate').value;document.getElementById('res').innerText=Math.round((a/10)*200/r*1000*10)/10;}<\/script></body></html>`;
 
         init();
